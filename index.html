@@ -1,1 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Mreward PRO - Pakistan</title>
+  <meta name="theme-color" content="#01411C">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <style>
+    :root{--primary:#01411C;--primary-light:#015C28;--accent:#C8A951;--accent-light:#F0D060;--background:#f5f7f5;--surface:#fff;--text-primary:#1a2e1a;--text-secondary:#5a7a5a;--success:#2e7d32;--error:#c62828;--warning:#f57c00;--border:#d8e8d8;--radius:14px;--shadow:0 4px 12px rgba(1,65,28,0.1);--shadow-lg:0 8px 30px rgba(1,65,28,0.15);}
+    *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',system-ui,sans-serif;-webkit-tap-highlight-color:transparent;}
+    html,body{height:100%;overflow-x:hidden;background:var(--background);color:var(--text-primary);}
+    .auth-container{position:fixed;top:0;left:0;width:100%;height:100vh;background:linear-gradient(160deg,#01411C 0%,#015C28 50%,#01411C 100%);display:flex;flex-direction:column;justify-content:center;align-items:center;padding:28px;z-index:9999;overflow-y:auto;}
+    .auth-container.hidden{display:none;}
+    .pk-flag-bar{display:flex;align-items:center;gap:10px;margin-bottom:24px;}
+    .pk-flag-bar span{font-size:26px;}
+    .pk-flag-text{color:rgba(255,255,255,0.8);font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;}
+    .app-logo{text-align:center;margin-bottom:24px;}
+    .logo-icon{width:74px;height:74px;border-radius:22px;background:rgba(200,169,81,0.2);border:2px solid rgba(200,169,81,0.45);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:28px;font-weight:800;color:var(--accent-light);box-shadow:0 8px 32px rgba(0,0,0,0.25);}
+    .app-title{font-size:26px;font-weight:700;color:#fff;margin-bottom:4px;}
+    .app-subtitle{font-size:13px;color:rgba(255,255,255,0.75);}
+    .pk-badge{display:inline-block;background:rgba(200,169,81,0.18);border:1px solid rgba(200,169,81,0.4);color:var(--accent-light);padding:4px 14px;border-radius:20px;font-size:11px;font-weight:600;margin-top:8px;}
+    .login-card{width:100%;max-width:370px;background:rgba(255,255,255,0.97);border-radius:22px;padding:28px;box-shadow:0 24px 48px rgba(0,0,0,0.2);border:1px solid rgba(200,169,81,0.2);}
+    .form-title{font-size:20px;font-weight:700;color:var(--primary);margin-bottom:4px;text-align:center;}
+    .form-subtitle{font-size:12px;color:var(--text-secondary);text-align:center;margin-bottom:22px;}
+    .input-label{display:block;font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:5px;}
+    .input-field{width:100%;height:50px;padding:0 16px;border:2px solid var(--border);border-radius:12px;font-size:16px;background:#fff;transition:all 0.3s;outline:none;margin-bottom:12px;}
+    .input-field:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(1,65,28,0.1);}
+    .btn-primary{width:100%;height:50px;background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;margin-bottom:10px;transition:all 0.3s;}
+    .btn-primary:active{transform:scale(0.98);}
+    .btn-secondary{width:100%;height:50px;background:transparent;color:var(--primary);border:2px solid var(--primary);border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;transition:all 0.3s;}
+    .btn-secondary:active{background:var(--primary);color:#fff;}
+    .form-message{text-align:center;padding:10px 14px;border-radius:10px;font-size:13px;margin-top:10px;min-height:18px;}
+    .form-message.error{background:#ffebee;color:#c62828;}
+    .form-message.success{background:#e8f5e9;color:#2e7d32;}
+    .form-message.info{background:#e3f2fd;color:#1565c0;}
+    .main-app{width:100%;height:100vh;display:none;flex-direction:column;background:var(--background);}
+    .main-app.visible{display:flex;}
+    .app-header{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;box-shadow:var(--shadow-lg);}
+    .header-left{display:flex;align-items:center;gap:10px;}
+    .header-logo{width:36px;height:36px;border-radius:9px;background:rgba(200,169,81,0.2);border:1px solid rgba(200,169,81,0.35);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:var(--accent-light);}
+    .header-title{font-size:18px;font-weight:700;}
+    .header-coins{display:flex;align-items:center;gap:6px;background:rgba(200,169,81,0.18);border:1px solid rgba(200,169,81,0.35);padding:5px 12px;border-radius:20px;font-size:13px;font-weight:700;color:var(--accent-light);}
+    .content-container{flex:1;overflow-y:auto;padding:18px;padding-bottom:90px;}
+    .card{background:var(--surface);border-radius:var(--radius);padding:18px;margin-bottom:14px;box-shadow:var(--shadow);border:1px solid var(--border);}
+    .card-title{font-size:16px;font-weight:700;color:var(--primary);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+    .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:2px solid var(--border);display:flex;padding:6px 0 8px;box-shadow:0 -4px 15px rgba(1,65,28,0.1);}
+    .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;padding:5px;color:var(--text-secondary);font-size:10px;font-weight:600;cursor:pointer;transition:all 0.2s;gap:2px;}
+    .nav-item.active{color:var(--primary);}
+    .nav-icon{font-size:22px;}
+    .hidden{display:none!important;}
+    .tab-content.hidden{display:none!important;}
+    .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+    .stat-card{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;padding:18px;border-radius:var(--radius);text-align:center;cursor:pointer;transition:transform 0.25s;position:relative;overflow:hidden;border:1px solid rgba(200,169,81,0.2);}
+    .stat-card:active{transform:scale(0.97);}
+    .stat-value{font-size:24px;font-weight:800;margin-bottom:3px;color:var(--accent-light);}
+    .stat-label{font-size:11px;opacity:0.85;font-weight:500;}
+    .btn{padding:10px 16px;border-radius:10px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.25s;background:var(--primary);color:#fff;display:inline-block;}
+    .btn:active{transform:scale(0.97);}
+    .btn.ghost{background:transparent;color:var(--primary);border:2px solid var(--primary);}
+    .btn.ghost:active{background:var(--primary);color:#fff;}
+    .btn.green{background:var(--success);color:#fff;}
+    .btn.gold{background:linear-gradient(135deg,#C8A951,#F0D060);color:#1a2e1a;}
+    .btn-enhanced{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;border:none;padding:14px 24px;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.3s;width:100%;margin-top:12px;}
+    .btn-enhanced:active{transform:scale(0.98);}
+    .btn-enhanced:disabled{opacity:0.55;cursor:not-allowed;}
+    .list{max-height:320px;overflow-y:auto;}
+    .list-item{padding:13px;border-radius:12px;background:#f8faf8;margin-bottom:10px;border:1px solid var(--border);}
+    .small{font-size:12px;color:var(--text-secondary);}
+    .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;}
+    .badge.pending{background:#fff3e0;color:#e65100;}
+    .badge.approved{background:#e8f5e9;color:#2e7d32;}
+    .badge.rejected{background:#ffebee;color:#c62828;}
+    .wheel-wrapper{text-align:center;padding:8px 0;}
+    #wheel-of-fortune{width:230px;height:230px;border-radius:50%;background:conic-gradient(from 0deg,#01411C 0deg 45deg,#C8A951 45deg 90deg,#015C28 90deg 135deg,#F0D060 135deg 180deg,#01411C 180deg 225deg,#C8A951 225deg 270deg,#015C28 270deg 315deg,#F0D060 315deg 360deg);margin:0 auto;position:relative;border:8px solid #fff;box-shadow:0 8px 30px rgba(1,65,28,0.3);transition:transform 4s cubic-bezier(0.25,0.1,0.25,1);display:flex;align-items:center;justify-content:center;}
+    .wl{position:absolute;font-size:16px;font-weight:800;color:#fff;text-shadow:1px 1px 3px rgba(0,0,0,0.7);}
+    .wheel-pointer{width:0;height:0;border-left:20px solid transparent;border-right:20px solid transparent;border-bottom:36px solid var(--primary);margin:0 auto;position:relative;filter:drop-shadow(0 3px 5px rgba(0,0,0,0.3));}
+    #spinner-result{position:absolute;top:9px;left:50%;transform:translateX(-50%);color:#fff;font-size:13px;font-weight:800;width:32px;text-align:center;}
+    .withdraw-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    .withdraw-option{background:#f5faf5;border:2px solid var(--border);border-radius:12px;padding:14px 10px;text-align:center;transition:border-color 0.2s;}
+    .withdraw-option:hover{border-color:var(--primary);}
+    .withdraw-icon{font-size:26px;margin-bottom:5px;}
+    .withdraw-name{font-size:13px;font-weight:700;color:var(--primary);margin-bottom:3px;}
+    .withdraw-min{font-size:11px;color:var(--text-secondary);margin-bottom:8px;}
+    .ref-box{background:linear-gradient(135deg,#f0f9f0,#e8f5e9);border:2px dashed var(--primary);border-radius:12px;padding:14px;text-align:center;margin-bottom:12px;}
+    .ref-code-text{font-size:22px;font-weight:800;color:var(--primary);letter-spacing:3px;}
+    .toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:var(--text-primary);color:#fff;padding:10px 20px;border-radius:25px;font-size:13px;font-weight:500;z-index:10000;box-shadow:var(--shadow-lg);display:none;}
+    .toast.success{background:var(--success);}
+    .toast.error{background:var(--error);}
+    .notif-cont{position:fixed;top:16px;right:14px;z-index:10001;display:flex;flex-direction:column;gap:8px;max-width:290px;}
+    .notif{padding:12px 14px;border-radius:12px;color:#fff;font-size:12px;font-weight:500;box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:8px;animation:slideIn 0.3s ease-out;}
+    .notif.success{background:var(--success);}
+    .notif.error{background:var(--error);}
+    .notif.info{background:var(--primary);}
+    @keyframes slideIn{from{transform:translateX(110%);opacity:0;}to{transform:translateX(0);opacity:1;}}
+    @keyframes coinFlip{0%{transform:rotateY(0);}50%{transform:rotateY(180deg) scale(1.1);}100%{transform:rotateY(360deg);}}
+    @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.6;}}
+    .pulse{animation:pulse 2s infinite;}
+    .coin-flip{animation:coinFlip 0.6s ease;}
+    .avatar-circle{width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,var(--primary),var(--primary-light));display:flex;align-items:center;justify-content:center;color:#fff;font-size:26px;font-weight:800;border:2px solid rgba(200,169,81,0.4);}
+    .pk-banner{background:linear-gradient(135deg,var(--primary),var(--primary-light));border-radius:var(--radius);padding:18px;color:#fff;margin-bottom:14px;border:1px solid rgba(200,169,81,0.3);}
+    .pk-banner h3{color:var(--accent-light);margin-bottom:12px;font-size:14px;}
+    .pk-feat{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+    .pk-feat:last-child{margin-bottom:0;}
+    .pk-feat-icon{font-size:20px;}
+    .pk-feat-text{font-size:12px;opacity:0.85;}
+    .pk-feat-title{font-weight:600;font-size:13px;}
+    @media(max-width:360px){.stats-grid{gap:8px;}.stat-value{font-size:20px;}.notif-cont{left:10px;right:10px;max-width:none;}}
+    @media(prefers-color-scheme:dark){:root{--background:#0f1f0f;--surface:#1a2e1a;--text-primary:#e8f5e9;--text-secondary:#81c784;--border:#2e4d2e;}}
+  </style>
+</head>
+<body>
 
+<!-- AUTH -->
+<div id="auth-container" class="auth-container">
+  <div class="pk-flag-bar"><span>🇵🇰</span><span class="pk-flag-text">Pakistan's #1 Rewards App</span></div>
+  <div class="app-logo">
+    <div class="logo-icon">MR</div>
+    <h1 class="app-title">Mreward PRO</h1>
+    <p class="app-subtitle">Ghar baithe kamao – Real Cash Rewards</p>
+    <span class="pk-badge">🌙 Pakistani Edition</span>
+  </div>
+  <div class="login-card">
+    <h2 class="form-title">Khush Aamdeed! 👋</h2>
+    <p class="form-subtitle">Sign in karein aur kamana shuru karein</p>
+    <label class="input-label">📧 Email Address</label>
+    <input type="email" id="email-input" class="input-field" placeholder="apka@email.com">
+    <label class="input-label">🔒 Password</label>
+    <input type="password" id="password-input" class="input-field" placeholder="Password darj karein">
+    <button id="signin-btn" class="btn-primary">🔐 Sign In</button>
+    <button id="signup-btn" class="btn-secondary">✨ Naya Account Banao</button>
+    <div id="auth-message" class="form-message"></div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="main-app" class="main-app">
+  <header class="app-header">
+    <div class="header-left">
+      <div class="header-logo">MR</div>
+      <div class="header-title">Mreward PRO 🇵🇰</div>
+    </div>
+    <div class="header-coins">💰 <span id="header-coins">0</span></div>
+  </header>
+
+  <div class="content-container">
+    <!-- HOME -->
+    <div id="home-content" class="tab-content">
+      <div class="stats-grid">
+        <div class="stat-card" onclick="animateCoin()"><div class="stat-value" id="coin-balance">0</div><div class="stat-label">💰 Total Coins</div></div>
+        <div class="stat-card"><div class="stat-value" id="daily-status">🎁</div><div class="stat-label">Roz Ka Inaam</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="pulse">🎁</span> Roz Ka Inaam</div>
+        <p class="small">Har 24 ghante mein 50 coins claim karo!</p>
+        <button id="claim-daily" class="btn-enhanced"><span id="daily-text">🎁 Daily Reward Claim Karo</span></button>
+        <div id="daily-msg" class="small" style="margin-top:10px;text-align:center;"></div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="justify-content:space-between;">
+          <span><span class="pulse">🎰</span> Spin &amp; Jeetoo!</span>
+          <span id="spin-status" class="small" style="color:var(--primary);font-weight:700;">Cost: 5 coins</span>
+        </div>
+        <div class="wheel-wrapper">
+          <div id="wheel-of-fortune">
+            <div class="wl" style="top:12px;left:50%;transform:translateX(-50%)">10</div>
+            <div class="wl" style="top:34px;right:34px">25</div>
+            <div class="wl" style="top:50%;right:12px;transform:translateY(-50%)">5</div>
+            <div class="wl" style="bottom:34px;right:34px">20</div>
+            <div class="wl" style="bottom:12px;left:50%;transform:translateX(-50%)">0</div>
+            <div class="wl" style="bottom:34px;left:34px">50</div>
+            <div class="wl" style="top:50%;left:12px;transform:translateY(-50%)">15</div>
+            <div class="wl" style="top:34px;left:34px">0</div>
+            <div style="background:rgba(0,0,0,0.65);border-radius:50%;width:52px;height:52px;display:flex;align-items:center;justify-content:center;font-size:20px;z-index:2;">🎰</div>
+          </div>
+          <div style="position:relative;display:flex;justify-content:center;margin:10px 0 14px;">
+            <div class="wheel-pointer"><div id="spinner-result">?</div></div>
+          </div>
+          <p class="small" style="margin-bottom:12px;">🎯 50 coins tak jeeto! Sirf 5 coins per spin</p>
+          <button id="spin-btn" class="btn gold" style="padding:12px 30px;font-size:14px;font-weight:700;">🎰 SPIN KARO (5 coins)</button>
+          <div id="spin-message" style="margin-top:10px;font-size:12px;"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">📊 Meri Kamaai</div>
+        <div class="stats-grid" style="margin-bottom:0;">
+          <div class="stat-card" style="background:linear-gradient(135deg,#2e7d32,#388e3c);"><div class="stat-value" id="total-tasks">0</div><div class="stat-label">✅ Tasks Done</div></div>
+          <div class="stat-card" style="background:linear-gradient(135deg,#C8A951,#F0D060);"><div class="stat-value" style="color:#1a2e1a;" id="total-earned">0</div><div class="stat-label" style="color:#1a2e1a;">🏆 Total Earned</div></div>
+        </div>
+      </div>
+      <div class="pk-banner">
+        <h3>✨ Kyu Choose Karein Mreward PRO?</h3>
+        <div class="pk-feat"><span class="pk-feat-icon">📱</span><div><div class="pk-feat-title">Easypaisa &amp; JazzCash</div><div class="pk-feat-text">Direct apke mobile wallet mein payment</div></div></div>
+        <div class="pk-feat"><span class="pk-feat-icon">🤝</span><div><div class="pk-feat-title">Referral Bonus</div><div class="pk-feat-text">Har dost ke join karne par 100 coins</div></div></div>
+        <div class="pk-feat"><span class="pk-feat-icon">🎯</span><div><div class="pk-feat-title">Asaan Tasks</div><div class="pk-feat-text">Simple tasks karke fauri kamao</div></div></div>
+      </div>
+    </div>
+
+    <!-- TASKS -->
+    <div id="tasks-content" class="tab-content hidden">
+      <div class="card">
+        <div class="card-title">🎯 Available Tasks</div>
+        <p class="small" style="margin-bottom:14px;">Tasks complete karo aur coins kamaao!</p>
+        <div id="tasks-list" class="list"><div class="small">Tasks load ho rahi hain...</div></div>
+      </div>
+    </div>
+
+    <!-- REWARDS -->
+    <div id="rewards-content" class="tab-content hidden">
+      <div class="card">
+        <div class="card-title">🤝 Dost Ko Invite Karo</div>
+        <p class="small" style="margin-bottom:12px;">Referral code share karo, 100 coins per friend!</p>
+        <div class="ref-box">
+          <div class="small" style="margin-bottom:6px;">Tera Referral Code:</div>
+          <div class="ref-code-text" id="ref-code">LOADING</div>
+        </div>
+        <div style="display:flex;gap:10px;margin-bottom:10px;">
+          <button id="copy-ref" class="btn ghost" style="flex:1;">📋 Copy Link</button>
+          <button id="share-wa" class="btn" style="flex:1;background:#25D366;">📱 WhatsApp</button>
+        </div>
+        <button id="share-tg" class="btn ghost" style="width:100%;">✈️ Telegram Share</button>
+        <div style="background:#f0f9f0;border-radius:10px;padding:10px;margin-top:12px;text-align:center;">
+          <div class="small">💡 Har dost ke liye <strong style="color:var(--primary);">100 coins</strong> milenge!</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">💸 Paise Nikalo</div>
+        <div class="withdraw-grid">
+          <div class="withdraw-option">
+            <div class="withdraw-icon">📱</div><div class="withdraw-name">Easypaisa</div>
+            <div class="withdraw-min">Min: 2000 coins</div>
+            <button class="btn" style="width:100%;font-size:12px;padding:8px;" data-method="Easypaisa" data-min="2000">Withdraw</button>
+          </div>
+          <div class="withdraw-option">
+            <div class="withdraw-icon">🎵</div><div class="withdraw-name">JazzCash</div>
+            <div class="withdraw-min">Min: 2000 coins</div>
+            <button class="btn" style="width:100%;font-size:12px;padding:8px;" data-method="JazzCash" data-min="2000">Withdraw</button>
+          </div>
+          <div class="withdraw-option">
+            <div class="withdraw-icon">🏦</div><div class="withdraw-name">Bank Transfer</div>
+            <div class="withdraw-min">Min: 5000 coins</div>
+            <button class="btn" style="width:100%;font-size:12px;padding:8px;" data-method="Bank" data-min="5000">Withdraw</button>
+          </div>
+          <div class="withdraw-option">
+            <div class="withdraw-icon">📲</div><div class="withdraw-name">SadaPay</div>
+            <div class="withdraw-min">Min: 3000 coins</div>
+            <button class="btn" style="width:100%;font-size:12px;padding:8px;" data-method="SadaPay" data-min="3000">Withdraw</button>
+          </div>
+        </div>
+        <div style="margin-top:14px;">
+          <div class="card-title" style="margin-bottom:10px;">📋 Withdrawal History</div>
+          <div id="withdraw-history" class="list"><div class="small">Abhi tak koi withdrawal nahi.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROFILE -->
+    <div id="profile-content" class="tab-content hidden">
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div class="avatar-circle" id="avatar">U</div>
+          <div style="flex:1;">
+            <h3 id="profile-name" style="margin:0;font-size:16px;">User</h3>
+            <div id="profile-email" class="small" style="margin:3px 0;">email@example.com</div>
+            <div class="small">🇵🇰 Pakistan</div>
+            <button id="logout" class="btn ghost" style="margin-top:10px;font-size:12px;padding:8px 14px;">🚪 Logout</button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">📊 Account Summary</div>
+        <div class="stats-grid">
+          <div style="text-align:center;padding:14px;background:#f5faf5;border-radius:12px;border:1px solid var(--border);">
+            <div style="font-size:22px;font-weight:800;color:var(--primary);" id="profile-coins">0</div>
+            <div class="small">💰 Total Coins</div>
+          </div>
+          <div style="text-align:center;padding:14px;background:#f5faf5;border-radius:12px;border:1px solid var(--border);">
+            <div style="font-size:22px;font-weight:800;color:var(--success);" id="profile-withdrawals">0</div>
+            <div class="small">💸 Withdrawals</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">📈 Recent Activity</div>
+        <div id="recent-activity" class="list"><div class="small">Koi activity nahi abhi tak.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <div class="nav-item active" data-tab="home"><div class="nav-icon">🏠</div><span>Home</span></div>
+    <div class="nav-item" data-tab="tasks"><div class="nav-icon">🎯</div><span>Tasks</span></div>
+    <div class="nav-item" data-tab="rewards"><div class="nav-icon">💸</div><span>Rewards</span></div>
+    <div class="nav-item" data-tab="profile"><div class="nav-icon">👤</div><span>Profile</span></div>
+  </nav>
+</div>
+
+<div id="toast" class="toast"></div>
+<div id="notif-cont" class="notif-cont"></div>
+
+<script>
+  let auth, db, currentUserData = {}, isSpinning = false;
+  // completedTasks ab Firestore users doc mein stored hai (completedTaskIds array)
+  // Koi alag collection ya compound query nahi - index ki zaroorat nahi
+  let openedTasks = new Set(), completedTasks = new Set(), taskReturnTimers = new Map();
+  let claimInProgress = new Set(); // double-click prevent
+  const SPIN_COST = 5, REWARDS = [10, 25, 5, 20, 0, 50, 15, 0];
+
+  const firebaseConfig = {
+  apiKey: "AIzaSyDiw9Lkblug95sFXQIXQB4p6mWePdMvyWE",
+  authDomain: "paw-pro-589ab.firebaseapp.com",
+  databaseURL: "https://paw-pro-589ab-default-rtdb.firebaseio.com",
+  projectId: "paw-pro-589ab",
+  storageBucket: "paw-pro-589ab.firebasestorage.app",
+  messagingSenderId: "931588466367",
+  appId: "1:931588466367:web:71d47d147abbf55c4b480a"
+};
+
+  try {
+    firebase.initializeApp(firebaseConfig);
+    auth = firebase.auth();
+    db = firebase.firestore();
+
+    db.enablePersistence({ synchronizeTabs: true }).catch(() => {});
+
+    loadTaskStates();
+
+    auth.onAuthStateChanged(async user => {
+      if (user) {
+        document.getElementById('auth-container').classList.add('hidden');
+        document.getElementById('main-app').classList.add('visible');
+        resetAuthBtns();
+        const ref = db.collection('users').doc(user.uid);
+        try {
+          const doc = await ref.get();
+          if (doc.exists) {
+            await ref.update({ lastSeen: firebase.firestore.FieldValue.serverTimestamp(), email: user.email });
+            // ✅ completedTaskIds user doc se load karo - koi extra query nahi
+            const d = doc.data();
+            if (d.completedTaskIds && Array.isArray(d.completedTaskIds)) {
+              d.completedTaskIds.forEach(id => completedTasks.add(id));
+              saveTaskStates();
+            }
+          } else {
+            await ref.set({
+              email: user.email, coins: 500, totalTasks: 0, totalEarned: 500,
+              referralCode: genCode(), lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
+              createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+              uid: user.uid, country: 'Pakistan',
+              completedTaskIds: [] // ✅ array user doc mein
+            });
+            notify('🎉 Khush Aamdeed! 500 welcome coins mile!', 'success');
+          }
+        } catch (e) { console.error('User init error:', e); }
+
+        // Real-time listener
+        ref.onSnapshot(doc => {
+          if (doc.exists) {
+            const d = doc.data();
+            // completedTaskIds sync karo
+            if (d.completedTaskIds && Array.isArray(d.completedTaskIds)) {
+              d.completedTaskIds.forEach(id => completedTasks.add(id));
+              saveTaskStates();
+            }
+            updateUI(d, user);
+          }
+        });
+
+        loadTasks();
+        loadWithdrawHistory(user.uid);
+        loadRecentActivity(user.uid);
+        setupSystemListeners();
+        setupUserStatusListener(user.uid);
+        detectUserReturn();
+      } else {
+        document.getElementById('auth-container').classList.remove('hidden');
+        document.getElementById('main-app').classList.remove('visible');
+        openedTasks = new Set();
+        completedTasks = new Set();
+        claimInProgress = new Set();
+      }
+    });
+  } catch (e) {
+    const m = document.getElementById('auth-message');
+    if (m) { m.textContent = '🌐 Internet check karo aur page refresh karo.'; m.className = 'form-message error'; }
+  }
+
+  function resetAuthBtns() {
+    const s = document.getElementById('signin-btn'), g = document.getElementById('signup-btn');
+    if (s) { s.textContent = '🔐 Sign In'; s.disabled = false; }
+    if (g) { g.textContent = '✨ Naya Account Banao'; g.disabled = false; }
+  }
+
+  function loadTaskStates() {
+    try {
+      const o = localStorage.getItem('openedTasks'), c = localStorage.getItem('completedTasks');
+      if (o) openedTasks = new Set(JSON.parse(o));
+      if (c) completedTasks = new Set(JSON.parse(c));
+    } catch (e) { }
+  }
+
+  function saveTaskStates() {
+    try {
+      localStorage.setItem('openedTasks', JSON.stringify([...openedTasks]));
+      localStorage.setItem('completedTasks', JSON.stringify([...completedTasks]));
+    } catch (e) { }
+  }
+
+  function genCode() {
+    const c = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+    return Array.from({ length: 6 }, () => c[Math.floor(Math.random() * c.length)]).join('');
+  }
+
+  function set(id, val) { const e = document.getElementById(id); if (e) e.textContent = val; }
+
+  function animateCoin() {
+    const e = document.getElementById('coin-balance');
+    if (e) { e.classList.add('coin-flip'); setTimeout(() => e.classList.remove('coin-flip'), 700); }
+  }
+
+  function showToast(msg, type = 'success', dur = 3000) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.className = `toast ${type}`; t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', dur);
+  }
+
+  function notify(msg, type = 'success', dur = 4000) {
+    const c = document.getElementById('notif-cont');
+    const n = document.createElement('div');
+    n.className = `notif ${type}`;
+    const i = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+    n.innerHTML = `<span>${i}</span><span>${msg}</span>`;
+    c.appendChild(n);
+    setTimeout(() => n.remove(), dur);
+  }
+
+  function updateUI(data, user) {
+    currentUserData = data;
+    set('coin-balance', (data.coins || 0).toLocaleString());
+    set('header-coins', (data.coins || 0).toLocaleString());
+    set('total-tasks', data.totalTasks || 0);
+    set('total-earned', (data.totalEarned || 0).toLocaleString());
+    set('profile-coins', (data.coins || 0).toLocaleString());
+    if (data.referralCode) set('ref-code', data.referralCode);
+    else {
+      const code = genCode();
+      db.collection('users').doc(user.uid).update({ referralCode: code }).catch(() => { });
+      set('ref-code', code);
+    }
+    const name = user.email.split('@')[0];
+    set('profile-name', name); set('profile-email', user.email);
+    const av = document.getElementById('avatar'); if (av) av.textContent = user.email[0].toUpperCase();
+    const today = new Date().toISOString().slice(0, 10);
+    if (data.lastClaim === today) {
+      set('daily-status', '✅');
+      const btn = document.getElementById('claim-daily');
+      if (btn) { btn.disabled = true; btn.style.opacity = '0.55'; set('daily-text', '✅ Aaj Claim Ho Gaya'); }
+    } else {
+      set('daily-status', '🎁');
+      const btn = document.getElementById('claim-daily');
+      if (btn) { btn.disabled = false; btn.style.opacity = '1'; set('daily-text', '🎁 Daily Reward Claim Karo'); }
+    }
+    loadSpinStatus();
+  }
+
+  function switchTab(tab) {
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+    document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+    document.getElementById(`${tab}-content`).classList.remove('hidden');
+  }
+
+  function updateDisplay() {
+    set('coin-balance', (currentUserData.coins || 0).toLocaleString());
+    set('header-coins', (currentUserData.coins || 0).toLocaleString());
+    set('profile-coins', (currentUserData.coins || 0).toLocaleString());
+    set('total-tasks', currentUserData.totalTasks || 0);
+    set('total-earned', (currentUserData.totalEarned || 0).toLocaleString());
+  }
+
+  function loadSpinStatus() {
+    const btn = document.getElementById('spin-btn'), status = document.getElementById('spin-status');
+    if (!btn || !status) return;
+    const coins = currentUserData.coins || 0;
+    if (coins >= SPIN_COST) {
+      btn.disabled = false; btn.style.opacity = '1';
+      status.innerHTML = '<span style="color:var(--success)">✅ Ready!</span>';
+    } else {
+      btn.disabled = true; btn.style.opacity = '0.55';
+      status.innerHTML = `<span style="color:var(--error)">❌ ${SPIN_COST - coins} coins aur chahiye</span>`;
+    }
+  }
+
+  async function handleSpin() {
+    if (isSpinning) return;
+    const user = auth.currentUser; if (!user) { notify('Pehle sign in karo', 'error'); return; }
+    if ((currentUserData.coins || 0) < SPIN_COST) { notify(`Spin ke liye ${SPIN_COST} coins chahiye!`, 'error'); return; }
+    isSpinning = true;
+    const btn = document.getElementById('spin-btn'), wheel = document.getElementById('wheel-of-fortune'), msg = document.getElementById('spin-message');
+    try {
+      btn.disabled = true; btn.innerHTML = '🎰 Ghoom raha hai...';
+      msg.innerHTML = '<span style="color:var(--primary)">🎰 Wheel ghoom raha hai...</span>';
+      const ref = db.collection('users').doc(user.uid);
+      await ref.update({ coins: firebase.firestore.FieldValue.increment(-SPIN_COST) });
+      currentUserData.coins = (currentUserData.coins || 0) - SPIN_COST;
+      updateDisplay(); notify(`-${SPIN_COST} coins spin ke liye kate`, 'info');
+      const wi = Math.floor(Math.random() * REWARDS.length), reward = REWARDS[wi];
+      const final = 1440 + (Math.random() * 720) + (-(wi * 45)) + ((Math.random() - 0.5) * 20);
+      wheel.style.transform = `rotate(${final}deg)`;
+      const sr = document.getElementById('spinner-result');
+      if (sr) { sr.textContent = '🎯'; sr.style.color = '#fff'; }
+      await new Promise(r => setTimeout(r, 4500));
+      if (sr) { sr.textContent = reward; sr.style.color = reward > 0 ? '#51cf66' : '#ff6b6b'; }
+      if (reward > 0) {
+        await ref.update({ coins: firebase.firestore.FieldValue.increment(reward) });
+        currentUserData.coins = (currentUserData.coins || 0) + reward;
+        updateDisplay(); animateCoin();
+        notify(`🎉 Mubarak! ${reward} coins jeete!`, 'success');
+        msg.innerHTML = `<span style="color:var(--success)">🎉 ${reward} coins jeete!</span>`;
+      } else {
+        notify('Agli baar luck hoga! 🍀', 'info');
+        msg.innerHTML = '<span style="color:var(--warning)">🍀 Is baar nahi, agli baar zaroor!</span>';
+      }
+    } catch (e) {
+      console.error(e); notify('Spin mein error. Dobara try karo.', 'error');
+      try {
+        await db.collection('users').doc(user.uid).update({ coins: firebase.firestore.FieldValue.increment(SPIN_COST) });
+        currentUserData.coins = (currentUserData.coins || 0) + SPIN_COST; updateDisplay();
+      } catch (_) { }
+    } finally {
+      isSpinning = false; btn.disabled = false; btn.innerHTML = '🎰 SPIN KARO (5 coins)';
+      setTimeout(() => wheel.style.transform = 'rotate(0deg)', 2000); loadSpinStatus();
+    }
+  }
+
+  function loadTasks() {
+    const list = document.getElementById('tasks-list'); if (!list) return;
+    list.innerHTML = '<div class="small" style="padding:10px;">Tasks load ho rahi hain...</div>';
+    try {
+      db.collection('tasks').where('active', '==', true).onSnapshot(snap => {
+        if (snap.empty) {
+          list.innerHTML = '<div class="small" style="text-align:center;padding:20px;">🎯 Abhi koi task nahi. Baad mein check karo!</div>';
+          return;
+        }
+        list.innerHTML = '';
+        snap.forEach(doc => {
+          const data = doc.data();
+          const icons = { simple: '🎯', external: '🔗', youtube: '📺', survey: '📋', social: '📱' };
+          const icon = icons[data.type] || '🎯';
+          const item = document.createElement('div');
+          item.className = 'list-item';
+          item.setAttribute('data-task-id', doc.id);
+          item.setAttribute('data-coins', data.coins || 0);
+          let buttons = '';
+          if (completedTasks.has(doc.id)) {
+            buttons = `<div class="task-buttons"><div style="background:#e8f5e9;color:#2e7d32;padding:7px 12px;border-radius:8px;font-size:11px;font-weight:700;">✅ Mukammal</div></div>`;
+            item.style.opacity = '0.7';
+          } else if (data.link && data.type !== 'simple') {
+            if (openedTasks.has(doc.id)) {
+              buttons = `<div class="task-buttons"><button class="btn green" onclick="claimTask('${doc.id}',${data.coins || 0})" style="font-size:11px;padding:7px 12px;">🎁 ${data.coins || 0} Coins Lo</button></div>`;
+            } else {
+              buttons = `<div class="task-buttons"><button class="btn" onclick="openTaskLink('${data.link}','${doc.id}','${data.type}')" style="font-size:11px;padding:7px 12px;">${icon} Task Kholo</button><div style="font-size:10px;color:var(--text-secondary);margin-top:4px;text-align:center;">Pehle task pura karo</div></div>`;
+            }
+          } else {
+            buttons = `<div class="task-buttons"><button class="btn" onclick="claimTask('${doc.id}',${data.coins || 0})" style="font-size:11px;padding:7px 12px;">${icon} Claim Karo</button></div>`;
+          }
+          item.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;"><div style="flex:1;"><div style="display:flex;align-items:center;gap:7px;margin-bottom:4px;"><span style="font-size:17px;">${icon}</span><strong style="font-size:13px;">${data.title || 'Task'}</strong></div><div class="small">${data.desc || ''}</div></div><div style="text-align:right;min-width:120px;"><div style="color:var(--success);font-weight:800;font-size:15px;margin-bottom:7px;">+${data.coins || 0}</div>${buttons}</div></div>`;
+          list.appendChild(item);
+        });
+      }, err => {
+        console.error('Tasks snapshot error:', err);
+        list.innerHTML = '<div class="small" style="padding:10px;color:red;">Tasks load nahi hueen. Internet check karo ya refresh karo.</div>';
+      });
+    } catch (e) {
+      list.innerHTML = '<div class="small" style="padding:10px;">Connection error. Internet check karo.</div>';
+    }
+  }
+
+  // ✅ MAIN FIX: claimTask - user doc mein completedTaskIds array use karo
+  // Koi compound query nahi, koi extra index nahi, koi permission issue nahi
+  window.claimTask = async function (taskId, coins) {
+    const user = auth.currentUser;
+    if (!user) { showToast('Pehle sign in karo', 'error'); return; }
+
+    // Already processing check
+    if (claimInProgress.has(taskId)) { notify('⏳ Pehle ka claim chal raha hai...', 'info'); return; }
+
+    const el = document.querySelector(`[data-task-id="${taskId}"]`);
+
+    // Link wala task - pehle khola ya nahi
+    if (el && !openedTasks.has(taskId) && el.querySelector('button[onclick*="openTaskLink"]')) {
+      notify('❌ Pehle task link kholo!', 'error'); return;
+    }
+
+    // Local completed check
+    if (completedTasks.has(taskId)) {
+      notify('✅ Yeh task pehle hi complete ho chuka!', 'info');
+      // UI fix karo agar button abhi bhi show ho raha
+      const tb = el ? el.querySelector('.task-buttons') : null;
+      if (tb) tb.innerHTML = '<div style="background:#e8f5e9;color:#2e7d32;padding:7px 12px;border-radius:8px;font-size:11px;font-weight:700;">✅ Mukammal</div>';
+      if (el) el.style.opacity = '0.7';
+      return;
+    }
+
+    // Button disable + progress track
+    claimInProgress.add(taskId);
+    const claimBtn = el ? el.querySelector('.task-buttons button') : null;
+    if (claimBtn) { claimBtn.disabled = true; claimBtn.textContent = '⏳ Ho raha hai...'; }
+
+    try {
+      notify('Task claim ho raha hai...', 'info');
+
+      const uRef = db.collection('users').doc(user.uid);
+
+      // ✅ Single transaction - sirf user doc update karo
+      // task_activities collection ki zaroorat nahi - no index required
+      await db.runTransaction(async tx => {
+        const ud = await tx.get(uRef);
+        if (!ud.exists) throw new Error('User data nahi mila. Dobara login karo.');
+
+        const d = ud.data();
+        const existingCompleted = d.completedTaskIds || [];
+
+        // ✅ Transaction ke andar bhi check karo - race condition prevent
+        if (existingCompleted.includes(taskId)) {
+          throw new Error('ALREADY_CLAIMED');
+        }
+
+        tx.update(uRef, {
+          coins: firebase.firestore.FieldValue.increment(coins),
+          totalTasks: firebase.firestore.FieldValue.increment(1),
+          totalEarned: firebase.firestore.FieldValue.increment(coins),
+          completedTaskIds: firebase.firestore.FieldValue.arrayUnion(taskId),
+          lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      });
+
+      // ✅ Success - UI update
+      notify(`🎉 Task mukammal! +${coins} coins mile!`, 'success');
+      animateCoin();
+
+      const tb = el ? el.querySelector('.task-buttons') : null;
+      if (tb) tb.innerHTML = '<div style="background:#e8f5e9;color:#2e7d32;padding:7px 12px;border-radius:8px;font-size:11px;font-weight:700;">✅ Mukammal</div>';
+      if (el) el.style.opacity = '0.7';
+
+      // Local state
+      if (currentUserData) {
+        currentUserData.coins = (currentUserData.coins || 0) + coins;
+        currentUserData.totalTasks = (currentUserData.totalTasks || 0) + 1;
+        currentUserData.totalEarned = (currentUserData.totalEarned || 0) + coins;
+        updateDisplay();
+      }
+      openedTasks.delete(taskId);
+      completedTasks.add(taskId);
+      saveTaskStates();
+
+      // Activity log alag try - fail hoi toh task complete mana jaye
+      try {
+        await db.collection('task_activities').add({
+          userId: user.uid, userEmail: user.email, taskId,
+          action: 'completed', coinsEarned: coins,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      } catch (_) { /* non-critical */ }
+
+    } catch (e) {
+      console.error('claimTask error:', e);
+
+      if (e.message === 'ALREADY_CLAIMED') {
+        completedTasks.add(taskId);
+        saveTaskStates();
+        notify('✅ Yeh task pehle hi complete ho chuka!', 'info');
+        const tb = el ? el.querySelector('.task-buttons') : null;
+        if (tb) tb.innerHTML = '<div style="background:#e8f5e9;color:#2e7d32;padding:7px 12px;border-radius:8px;font-size:11px;font-weight:700;">✅ Mukammal</div>';
+        if (el) el.style.opacity = '0.7';
+      } else {
+        // Button wapas enable karo
+        if (claimBtn) { claimBtn.disabled = false; claimBtn.textContent = `🎁 ${coins} Coins Lo`; }
+        notify('Task claim mein error. Dobara try karo.', 'error');
+      }
+    } finally {
+      claimInProgress.delete(taskId);
+    }
+  };
+
+  window.openTaskLink = function (link, taskId, taskType) {
+    if (!link) { notify('Koi link nahi hai', 'error'); return; }
+    const msgs = { youtube: '📺 Video dekho, like/subscribe karo, phir wapas aao!', survey: '📋 Survey complete karo, phir wapas aao!', social: '📱 Follow/like karo, phir wapas aao!' };
+    notify(msgs[taskType] || '🔗 Task complete karo aur wapas aao!', 'info', 5000);
+    openedTasks.add(taskId);
+    saveTaskStates();
+    taskReturnTimers.set(taskId, setTimeout(() => {
+      updateTaskBtn(taskId, taskType);
+      notify('✅ Wapas aaiye! Ab reward claim karo.', 'success', 3000);
+      taskReturnTimers.delete(taskId);
+    }, 10000));
+    const w = window.open(link, '_blank');
+    if (!w) notify('Popups allow karo browser settings mein', 'error');
+  };
+
+  function updateTaskBtn(taskId) {
+    const el = document.querySelector(`[data-task-id="${taskId}"] .task-buttons`);
+    const coins = document.querySelector(`[data-task-id="${taskId}"]`)?.dataset?.coins || 0;
+    if (el) el.innerHTML = `<button class="btn green" onclick="claimTask('${taskId}',${coins})" style="font-size:11px;padding:7px 12px;">🎁 ${coins} Coins Lo</button>`;
+  }
+
+  function detectUserReturn() {
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) {
+        taskReturnTimers.forEach((t, id) => {
+          clearTimeout(t);
+          setTimeout(() => {
+            updateTaskBtn(id);
+            notify('✅ Wapas aaiye! Reward claim karo.', 'success', 4000);
+          }, 1000);
+        });
+        taskReturnTimers.clear();
+      }
+    });
+  }
+
+  async function loadWithdrawHistory(uid) {
+    try {
+      db.collection('withdraw_requests').where('userId', '==', uid).orderBy('createdAt', 'desc').limit(10).onSnapshot(snap => {
+        const cont = document.getElementById('withdraw-history');
+        if (snap.empty) { cont.innerHTML = '<div class="small">Abhi tak koi withdrawal nahi.</div>'; set('profile-withdrawals', '0'); return; }
+        cont.innerHTML = ''; let count = 0;
+        snap.forEach(doc => {
+          count++;
+          const d = doc.data();
+          const item = document.createElement('div');
+          item.className = 'list-item';
+          const sm = { approved: { label: '✅ Approved', cls: 'approved' }, rejected: { label: '❌ Rejected', cls: 'rejected' }, pending: { label: '⏳ Pending', cls: 'pending' } };
+          const s = sm[d.status] || sm.pending;
+          item.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;"><div><strong>${d.method} – ${d.coins} coins</strong><div class="small">${d.destination || ''}</div><div class="small">${d.createdAt?.toDate()?.toLocaleDateString('en-PK') || 'Haal hi mein'}${d.rejectionReason ? ` • ${d.rejectionReason}` : ''}</div></div><span class="badge ${s.cls}">${s.label}</span></div>`;
+          cont.appendChild(item);
+        });
+        set('profile-withdrawals', count);
+        if (!window.wInit) { window.wInit = true; } else {
+          snap.docChanges().forEach(ch => {
+            if (ch.type === 'modified') {
+              const d = ch.doc.data();
+              if (d.status === 'approved') notify(`✅ ${d.coins} coins ki withdrawal approve!`, 'success');
+              else if (d.status === 'rejected') notify(`❌ Withdrawal reject hui${d.rejectionReason ? ': ' + d.rejectionReason : ''}`, 'error');
+            }
+          });
+        }
+      });
+    } catch (e) { console.error(e); }
+  }
+
+  async function loadRecentActivity(uid) {
+    try {
+      // Simple query - sirf userId filter, koi compound query nahi
+      db.collection('task_activities').where('userId', '==', uid)
+        .orderBy('timestamp', 'desc').limit(10)
+        .onSnapshot(snap => {
+          const cont = document.getElementById('recent-activity');
+          if (!cont) return;
+          if (snap.empty) { cont.innerHTML = '<div class="small">Koi activity nahi abhi tak.</div>'; return; }
+          cont.innerHTML = '';
+          snap.forEach(doc => {
+            const d = doc.data();
+            const item = document.createElement('div');
+            item.className = 'list-item';
+            const date = d.timestamp?.toDate()?.toLocaleDateString('en-PK') || 'Haal hi mein';
+            item.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;"><div><strong style="font-size:12px;">✅ Task Complete</strong><div class="small">${date}</div></div><div style="color:var(--success);font-weight:700;">+${d.coinsEarned || 0}</div></div>`;
+            cont.appendChild(item);
+          });
+        }, () => {
+          // Activity load fail hoi toh silent ignore
+          const cont = document.getElementById('recent-activity');
+          if (cont) cont.innerHTML = '<div class="small">Activity load nahi hui.</div>';
+        });
+    } catch (e) { console.error(e); }
+  }
+
+  function setupSystemListeners() {
+    try {
+      db.collection('system_config').doc('app_settings').onSnapshot(doc => {
+        if (doc.exists) window.appConfig = Object.assign(window.appConfig || {}, doc.data());
+      }, () => {});
+      db.collection('global_notifications').where('active', '==', true).where('expiresAt', '>', new Date()).onSnapshot(snap => {
+        snap.docChanges().forEach(ch => {
+          if (ch.type === 'added') { const n = ch.doc.data(); notify(n.message, n.type || 'info'); }
+        });
+      }, () => {});
+    } catch (e) { }
+  }
+
+  function setupUserStatusListener(uid) {
+    try {
+      db.collection('users').doc(uid).onSnapshot(doc => {
+        if (doc.exists) {
+          const d = doc.data();
+          if (d.banned) { notify('⚠️ Account suspend hai. Support se rabta karein.', 'error'); document.body.style.pointerEvents = 'none'; return; }
+          if (d.isVIP && !window.wasVIP) { notify('🎉 Mubarak! Aap VIP member ban gaye!', 'success'); window.wasVIP = true; }
+          updateUI(d, auth.currentUser);
+        }
+      });
+    } catch (e) { }
+  }
+
+  async function handleSignIn(e) {
+    e.preventDefault();
+    const email = document.getElementById('email-input').value.trim(), pass = document.getElementById('password-input').value;
+    const msg = document.getElementById('auth-message'), btn = document.getElementById('signin-btn');
+    if (!email || !pass) { msg.textContent = 'Email aur password enter karo'; msg.className = 'form-message error'; return; }
+    try {
+      btn.textContent = 'Sign in ho raha hai...'; btn.disabled = true;
+      msg.textContent = 'Connect ho raha hai...'; msg.className = 'form-message info';
+      await auth.signInWithEmailAndPassword(email, pass);
+      msg.textContent = 'Sign in hua! App load ho rahi hai...'; msg.className = 'form-message success';
+      showToast('Khush Aamdeed! 👋');
+    } catch (err) {
+      const errs = {
+        'auth/user-not-found': '🔍 Account nahi mila. Naya account banao.',
+        'auth/wrong-password': '🔑 Galat password.',
+        'auth/invalid-email': '📧 Email galat hai.',
+        'auth/network-request-failed': '🌐 Internet check karo.',
+        'auth/too-many-requests': '🚫 Bahut attempts. Thodi der baad try karo.',
+        'auth/invalid-credential': '🔑 Email ya password galat hai.'
+      };
+      msg.textContent = errs[err.code] || `Error: ${err.message}`; msg.className = 'form-message error';
+      btn.textContent = '🔐 Sign In'; btn.disabled = false;
+    }
+  }
+
+  async function handleSignUp(e) {
+    e.preventDefault();
+    const email = document.getElementById('email-input').value.trim(), pass = document.getElementById('password-input').value;
+    const msg = document.getElementById('auth-message'), btn = document.getElementById('signup-btn');
+    if (!email || pass.length < 6) { msg.textContent = 'Sahih email aur 6+ characters ka password darj karo'; msg.className = 'form-message error'; return; }
+    try {
+      btn.textContent = 'Account ban raha hai...'; btn.disabled = true;
+      msg.textContent = 'Account ban raha hai...'; msg.className = 'form-message info';
+      const cred = await auth.createUserWithEmailAndPassword(email, pass);
+      try {
+        await db.collection('users').doc(cred.user.uid).set({
+          email: cred.user.email, coins: 500, totalTasks: 0, totalEarned: 500,
+          referralCode: genCode(), createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          uid: cred.user.uid, country: 'Pakistan',
+          completedTaskIds: []
+        });
+      } catch (de) { console.error(de); }
+      msg.textContent = 'Account ban gaya! 500 welcome coins mile! 🎉'; msg.className = 'form-message success';
+      showToast('Khush Aamdeed! 500 bonus coins! 🎉');
+    } catch (err) {
+      const errs = {
+        'auth/email-already-in-use': '✉️ Email pehle se registered. Sign In karo.',
+        'auth/invalid-email': '📧 Email galat hai.',
+        'auth/weak-password': '🔒 Password kamzor. 6+ characters use karo.',
+        'auth/network-request-failed': '🌐 Internet check karo.'
+      };
+      msg.textContent = errs[err.code] || `Error: ${err.message}`; msg.className = 'form-message error';
+      btn.textContent = '✨ Naya Account Banao'; btn.disabled = false;
+    }
+  }
+
+  async function claimDailyReward() {
+    const user = auth.currentUser; if (!user) { showToast('Pehle sign in karo', 'error'); return; }
+    const btn = document.getElementById('claim-daily'), txt = document.getElementById('daily-text');
+    const msg = document.getElementById('daily-msg'), today = new Date().toISOString().slice(0, 10);
+    try {
+      btn.disabled = true; txt.textContent = 'Claim ho raha hai...';
+      await db.runTransaction(async tx => {
+        const ref = db.collection('users').doc(user.uid), doc = await tx.get(ref), d = doc.data() || {};
+        if (d.lastClaim === today) throw new Error('Aaj ka reward pehle hi le liya! Kal wapas aao 🌙');
+        tx.update(ref, {
+          coins: firebase.firestore.FieldValue.increment(50),
+          lastClaim: today,
+          totalEarned: firebase.firestore.FieldValue.increment(50),
+          lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      });
+      txt.textContent = '✅ Claim Ho Gaya!';
+      msg.textContent = 'Roz ka inaam mila! +50 coins 🎉'; msg.style.color = 'var(--success)'; msg.style.fontWeight = '600';
+      animateCoin(); set('daily-status', '✅'); notify('🎁 Daily reward mila! +50 coins', 'success');
+      setTimeout(() => { txt.textContent = '🎁 Aaj Ka Claim Ho Gaya'; btn.style.opacity = '0.55'; }, 2000);
+    } catch (err) {
+      txt.textContent = '🎁 Daily Reward Claim Karo'; btn.disabled = false;
+      msg.textContent = err.message; msg.style.color = 'var(--error)'; notify(err.message, 'error');
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('signin-btn').addEventListener('click', handleSignIn);
+    document.getElementById('signup-btn').addEventListener('click', handleSignUp);
+    document.getElementById('claim-daily').addEventListener('click', claimDailyReward);
+    document.getElementById('spin-btn').addEventListener('click', handleSpin);
+    document.getElementById('logout').addEventListener('click', () => { auth.signOut(); showToast('Sign out ho gaye'); });
+
+    document.getElementById('copy-ref').addEventListener('click', async () => {
+      const code = document.getElementById('ref-code').textContent, url = `${location.origin}${location.pathname}?ref=${code}`;
+      try { await navigator.clipboard.writeText(url); showToast('Referral link copy ho gaya! 📋'); } catch (_) { showToast('Copy nahi hua', 'error'); }
+    });
+    document.getElementById('share-wa').addEventListener('click', () => {
+      const code = document.getElementById('ref-code').textContent;
+      window.open(`https://wa.me/?text=${encodeURIComponent(`🇵🇰 Mreward PRO join karo aur ghar baithe kamao!\nCode: ${code}\n🔗 ${location.origin}${location.pathname}?ref=${code}`)}`, '_blank');
+    });
+    document.getElementById('share-tg').addEventListener('click', () => {
+      const code = document.getElementById('ref-code').textContent;
+      window.open(`https://t.me/share/url?url=${encodeURIComponent(location.origin + location.pathname + '?ref=' + code)}&text=${encodeURIComponent('🇵🇰 Mreward PRO Pakistan join karo!')}`, '_blank');
+    });
+
+    document.querySelectorAll('[data-method]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const method = btn.dataset.method, min = parseInt(btn.dataset.min), user = auth.currentUser;
+        if (!user) { alert('Pehle sign in karo'); return; }
+        const snap = await db.collection('users').doc(user.uid).get(), d = snap.data() || {}, curr = d.coins || 0;
+        if (curr < min) { notify(`Insufficient coins! ${min} chahiye, aapke paas ${curr} hain.`, 'error'); return; }
+        const amt = prompt(`Kitne coins nikalna chahte ho? (Min: ${min}, Max: ${curr})`); if (!amt) return;
+        const c = parseInt(amt); if (isNaN(c) || c < min || c > curr) { notify('Galat amount', 'error'); return; }
+        const promptText = method === 'Bank' ? 'Bank account number aur IBAN darj karein:' : method === 'Easypaisa' ? 'Easypaisa account number darj karein:' : method === 'JazzCash' ? 'JazzCash account number darj karein:' : 'SadaPay account number darj karein:';
+        const dest = prompt(promptText); if (!dest) return;
+        try {
+          await db.collection('withdraw_requests').add({
+            userId: user.uid, email: user.email, method, destination: dest, coins: c,
+            status: 'pending', createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            userName: user.email.split('@')[0], country: 'Pakistan'
+          });
+          await db.collection('users').doc(user.uid).update({
+            coins: firebase.firestore.FieldValue.increment(-c),
+            lastWithdrawal: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          notify(`✅ ${c} coins ki request submit! 24-48 ghante mein process hogi.`, 'success');
+        } catch (e) { console.error(e); notify('Withdrawal error. Dobara try karo.', 'error'); }
+      });
+    });
+
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', () => switchTab(item.dataset.tab));
+    });
+  });
+</script>
+</body>
+</html>
