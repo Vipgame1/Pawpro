@@ -14,6 +14,7 @@
     :root{--primary:#01411C;--primary-light:#015C28;--accent:#C8A951;--accent-light:#F0D060;--background:#f5f7f5;--surface:#fff;--text-primary:#1a2e1a;--text-secondary:#5a7a5a;--success:#2e7d32;--error:#c62828;--warning:#f57c00;--border:#d8e8d8;--radius:14px;--shadow:0 4px 12px rgba(1,65,28,0.1);--shadow-lg:0 8px 30px rgba(1,65,28,0.15);}
     *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',system-ui,sans-serif;-webkit-tap-highlight-color:transparent;}
     html,body{height:100%;overflow-x:hidden;background:var(--background);color:var(--text-primary);}
+    /* AUTH */
     .auth-container{position:fixed;top:0;left:0;width:100%;height:100vh;background:linear-gradient(160deg,#01411C 0%,#015C28 50%,#01411C 100%);display:flex;flex-direction:column;justify-content:center;align-items:center;padding:28px;z-index:9999;overflow-y:auto;}
     .auth-container.hidden{display:none;}
     .pk-flag-bar{display:flex;align-items:center;gap:10px;margin-bottom:24px;}
@@ -38,6 +39,10 @@
     .form-message.error{background:#ffebee;color:#c62828;}
     .form-message.success{background:#e8f5e9;color:#2e7d32;}
     .form-message.info{background:#e3f2fd;color:#1565c0;}
+    /* REFERRAL INPUT ON AUTH */
+    .ref-input-wrap{margin-top:8px;margin-bottom:4px;}
+    .ref-optional-lbl{font-size:11px;color:var(--text-secondary);text-align:center;margin-bottom:6px;display:block;}
+    /* MAIN APP */
     .main-app{width:100%;height:100vh;display:none;flex-direction:column;background:var(--background);}
     .main-app.visible{display:flex;}
     .app-header{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;box-shadow:var(--shadow-lg);}
@@ -75,19 +80,71 @@
     .badge.pending{background:#fff3e0;color:#e65100;}
     .badge.approved{background:#e8f5e9;color:#2e7d32;}
     .badge.rejected{background:#ffebee;color:#c62828;}
+    /* WHEEL */
     .wheel-wrapper{text-align:center;padding:8px 0;}
     #wheel-of-fortune{width:230px;height:230px;border-radius:50%;background:conic-gradient(from 0deg,#01411C 0deg 45deg,#C8A951 45deg 90deg,#015C28 90deg 135deg,#F0D060 135deg 180deg,#01411C 180deg 225deg,#C8A951 225deg 270deg,#015C28 270deg 315deg,#F0D060 315deg 360deg);margin:0 auto;position:relative;border:8px solid #fff;box-shadow:0 8px 30px rgba(1,65,28,0.3);transition:transform 4s cubic-bezier(0.25,0.1,0.25,1);display:flex;align-items:center;justify-content:center;}
     .wl{position:absolute;font-size:16px;font-weight:800;color:#fff;text-shadow:1px 1px 3px rgba(0,0,0,0.7);}
     .wheel-pointer{width:0;height:0;border-left:20px solid transparent;border-right:20px solid transparent;border-bottom:36px solid var(--primary);margin:0 auto;position:relative;filter:drop-shadow(0 3px 5px rgba(0,0,0,0.3));}
     #spinner-result{position:absolute;top:9px;left:50%;transform:translateX(-50%);color:#fff;font-size:13px;font-weight:800;width:32px;text-align:center;}
-    .withdraw-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-    .withdraw-option{background:#f5faf5;border:2px solid var(--border);border-radius:12px;padding:14px 10px;text-align:center;transition:border-color 0.2s;}
-    .withdraw-option:hover{border-color:var(--primary);}
-    .withdraw-icon{font-size:26px;margin-bottom:5px;}
+    /* ===== PROFESSIONAL PAYMENT LOGOS ===== */
+    .withdraw-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+    .withdraw-option{background:#fff;border:2px solid var(--border);border-radius:16px;padding:16px 10px 12px;text-align:center;transition:all 0.22s;cursor:pointer;box-shadow:0 2px 8px rgba(1,65,28,0.06);}
+    .withdraw-option:active{transform:scale(0.97);border-color:var(--primary);box-shadow:0 4px 16px rgba(1,65,28,0.15);}
+    .pay-logo-wrap{width:64px;height:64px;border-radius:16px;background:#f8f8f8;border:1.5px solid #ececec;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.07);}
+    .pay-logo{width:48px;height:48px;object-fit:contain;}
+    .bank-logo-wrap{background:linear-gradient(135deg,#e3f2fd,#bbdefb);border-color:#90caf9;}
     .withdraw-name{font-size:13px;font-weight:700;color:var(--primary);margin-bottom:3px;}
-    .withdraw-min{font-size:11px;color:var(--text-secondary);margin-bottom:8px;}
+    .withdraw-min{font-size:10px;color:var(--text-secondary);margin-bottom:10px;font-weight:500;}
+    .withdraw-btn{width:100%;font-size:12px;padding:9px 6px;border-radius:10px;font-weight:700;letter-spacing:0.2px;}
+    /* ===== REFERRAL BOX ===== */
     .ref-box{background:linear-gradient(135deg,#f0f9f0,#e8f5e9);border:2px dashed var(--primary);border-radius:12px;padding:14px;text-align:center;margin-bottom:12px;}
     .ref-code-text{font-size:22px;font-weight:800;color:var(--primary);letter-spacing:3px;}
+    .ref-stats{display:flex;gap:10px;margin-top:12px;}
+    .ref-stat-box{flex:1;background:#fff;border-radius:10px;padding:10px;text-align:center;border:1px solid var(--border);}
+    .ref-stat-val{font-size:20px;font-weight:800;color:var(--primary);}
+    .ref-stat-lbl{font-size:10px;color:var(--text-secondary);margin-top:2px;}
+    /* ===== WITHDRAWAL HISTORY CARDS ===== */
+    .w-history-wrap{display:flex;flex-direction:column;gap:12px;margin-top:4px;}
+    .w-card{background:#fff;border-radius:16px;padding:16px;border:1.5px solid var(--border);box-shadow:0 3px 12px rgba(1,65,28,0.07);position:relative;overflow:hidden;}
+    .w-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px;border-radius:5px 0 0 5px;}
+    .w-card.processing::before{background:linear-gradient(180deg,#ff9800,#f57c00);}
+    .w-card.completed::before{background:linear-gradient(180deg,#4caf50,#2e7d32);}
+    .w-card.rejected::before{background:linear-gradient(180deg,#f44336,#c62828);}
+    .w-top-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+    .w-method-logo{width:42px;height:42px;border-radius:12px;background:#f5f5f5;border:1.5px solid #e8e8e8;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;}
+    .w-method-logo img{width:30px;height:30px;object-fit:contain;}
+    .w-method-info{flex:1;}
+    .w-method-name{font-size:14px;font-weight:700;color:var(--text-primary);}
+    .w-coins-amount{font-size:15px;font-weight:800;color:var(--primary);}
+    .w-status-badge{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;flex-shrink:0;}
+    .w-status-badge.processing{background:#fff3e0;color:#e65100;border:1px solid #ffcc02;}
+    .w-status-badge.completed{background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;}
+    .w-status-badge.rejected{background:#ffebee;color:#c62828;border:1px solid #ffcdd2;}
+    .w-details{background:#f8faf8;border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;}
+    .w-detail-row{display:flex;justify-content:space-between;align-items:center;}
+    .w-detail-label{font-size:11px;color:var(--text-secondary);font-weight:500;}
+    .w-detail-val{font-size:11px;font-weight:700;color:var(--text-primary);font-family:monospace;}
+    .w-reject-reason{margin-top:8px;padding:8px 10px;background:#ffebee;border-radius:8px;font-size:11px;color:#c62828;border-left:3px solid #f44336;}
+    /* WITHDRAW MODAL */
+    .w-modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:2000;display:flex;align-items:flex-end;justify-content:center;}
+    .w-modal-bg.hidden{display:none;}
+    .w-modal{background:#fff;border-radius:24px 24px 0 0;padding:26px 22px;width:100%;max-width:480px;border:1px solid var(--border);border-bottom:none;max-height:88vh;overflow-y:auto;}
+    .w-modal-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+    .w-modal-logo{width:46px;height:46px;border-radius:14px;background:#f5f5f5;border:1.5px solid #e8e8e8;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;}
+    .w-modal-logo img{width:32px;height:32px;object-fit:contain;}
+    .w-modal-title{font-size:18px;font-weight:800;color:var(--primary);}
+    .w-modal-sub{font-size:12px;color:var(--text-secondary);}
+    .w-balance-box{background:linear-gradient(135deg,#f0f9f0,#e8f5e9);border-radius:12px;padding:14px 16px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:center;border:1px solid #c8e6c9;}
+    .w-bal-lbl{font-size:12px;color:var(--text-secondary);}
+    .w-bal-val{font-size:22px;font-weight:800;color:var(--primary);}
+    .w-inp-lbl{display:block;font-size:12px;font-weight:700;color:var(--text-secondary);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;}
+    .w-inp{width:100%;height:50px;padding:0 16px;border:2px solid var(--border);border-radius:12px;font-size:15px;background:#f8faf8;outline:none;margin-bottom:14px;transition:border-color 0.3s;color:var(--text-primary);}
+    .w-inp:focus{border-color:var(--primary);background:#fff;}
+    .w-error{color:#c62828;font-size:12px;margin-bottom:10px;min-height:16px;padding:0 2px;}
+    .w-submit{width:100%;height:52px;background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;margin-top:4px;transition:all 0.3s;}
+    .w-submit:disabled{opacity:0.55;cursor:not-allowed;}
+    .w-cancel{width:100%;height:46px;background:transparent;color:var(--text-secondary);border:1.5px solid var(--border);border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;margin-top:10px;}
+    /* MISC */
     .toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:var(--text-primary);color:#fff;padding:10px 20px;border-radius:25px;font-size:13px;font-weight:500;z-index:10000;box-shadow:var(--shadow-lg);display:none;}
     .toast.success{background:var(--success);}
     .toast.error{background:var(--error);}
@@ -131,6 +188,12 @@
     <input type="email" id="email-input" class="input-field" placeholder="apka@email.com">
     <label class="input-label">🔒 Password</label>
     <input type="password" id="password-input" class="input-field" placeholder="Password darj karein">
+    <!-- ✅ REFERRAL CODE FIELD (signup ke liye) -->
+    <div class="ref-input-wrap" id="ref-code-wrap" style="display:none;">
+      <span class="ref-optional-lbl">🎁 Kisi ne invite kiya? (Optional)</span>
+      <label class="input-label">🤝 Referral Code</label>
+      <input type="text" id="ref-code-input" class="input-field" placeholder="e.g. ABC123" maxlength="8" style="text-transform:uppercase;letter-spacing:2px;">
+    </div>
     <button id="signin-btn" class="btn-primary">🔐 Sign In</button>
     <button id="signup-btn" class="btn-secondary">✨ Naya Account Banao</button>
     <div id="auth-message" class="form-message"></div>
@@ -211,6 +274,7 @@
 
     <!-- REWARDS -->
     <div id="rewards-content" class="tab-content hidden">
+      <!-- REFERRAL CARD -->
       <div class="card">
         <div class="card-title">🤝 Dost Ko Invite Karo</div>
         <p class="small" style="margin-bottom:12px;">Referral code share karo, 100 coins per friend!</p>
@@ -218,7 +282,17 @@
           <div class="small" style="margin-bottom:6px;">Tera Referral Code:</div>
           <div class="ref-code-text" id="ref-code">LOADING</div>
         </div>
-        <div style="display:flex;gap:10px;margin-bottom:10px;">
+        <div class="ref-stats">
+          <div class="ref-stat-box">
+            <div class="ref-stat-val" id="ref-count">0</div>
+            <div class="ref-stat-lbl">👥 Referrals</div>
+          </div>
+          <div class="ref-stat-box">
+            <div class="ref-stat-val" id="ref-earned">0</div>
+            <div class="ref-stat-lbl">💰 Earned</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:12px;margin-bottom:10px;">
           <button id="copy-ref" class="btn ghost" style="flex:1;">📋 Copy Link</button>
           <button id="share-wa" class="btn" style="flex:1;background:#25D366;">📱 WhatsApp</button>
         </div>
@@ -227,33 +301,57 @@
           <div class="small">💡 Har dost ke liye <strong style="color:var(--primary);">100 coins</strong> milenge!</div>
         </div>
       </div>
+
+      <!-- WITHDRAWAL CARD WITH REAL LOGOS -->
       <div class="card">
         <div class="card-title">💸 Paise Nikalo</div>
         <div class="withdraw-grid">
-          <div class="withdraw-option">
-            <div class="withdraw-icon">📱</div><div class="withdraw-name">Easypaisa</div>
+          <div class="withdraw-option" onclick="openWithdrawModal('Easypaisa',2000)">
+            <div class="pay-logo-wrap">
+              <img src="data:image/png;base64,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" class="pay-logo" alt="Easypaisa">
+            </div>
+            <div class="withdraw-name">Easypaisa</div>
             <div class="withdraw-min">Min: 2000 coins</div>
-            <button class="btn" style="width:100%;font-size:12px;padding:8px;" data-method="Easypaisa" data-min="2000">Withdraw</button>
+            <button class="btn withdraw-btn">Withdraw</button>
           </div>
-          <div class="withdraw-option">
-            <div class="withdraw-icon">🎵</div><div class="withdraw-name">JazzCash</div>
+          <div class="withdraw-option" onclick="openWithdrawModal('JazzCash',2000)">
+            <div class="pay-logo-wrap">
+              <img src="data:image/png;base64,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" class="pay-logo" alt="JazzCash">
+            </div>
+            <div class="withdraw-name">JazzCash</div>
             <div class="withdraw-min">Min: 2000 coins</div>
-            <button class="btn" style="width:100%;font-size:12px;padding:8px;" data-method="JazzCash" data-min="2000">Withdraw</button>
+            <button class="btn withdraw-btn">Withdraw</button>
           </div>
-          <div class="withdraw-option">
-            <div class="withdraw-icon">🏦</div><div class="withdraw-name">Bank Transfer</div>
+          <div class="withdraw-option" onclick="openWithdrawModal('Bank',5000)">
+            <div class="pay-logo-wrap bank-logo-wrap">
+              <span style="font-size:36px;">🏦</span>
+            </div>
+            <div class="withdraw-name">Bank Transfer</div>
             <div class="withdraw-min">Min: 5000 coins</div>
-            <button class="btn" style="width:100%;font-size:12px;padding:8px;" data-method="Bank" data-min="5000">Withdraw</button>
+            <button class="btn withdraw-btn">Withdraw</button>
           </div>
-          <div class="withdraw-option">
-            <div class="withdraw-icon">📲</div><div class="withdraw-name">SadaPay</div>
+          <div class="withdraw-option" onclick="openWithdrawModal('SadaPay',3000)">
+            <div class="pay-logo-wrap">
+              <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGYAAABmCAMAAAAOARRQAAABP2lDQ1BpY2MAAHicfZC/SwJxGMY/11WWWA05NBQcJU0FUUtTgYZOEfgj1Kbz/FGgdt33QprLoaloiEZrCaLZxhz6A4KgIQqirdWghpKLrw5aUM/yfnh4Xt6XB5TnvFEQ3RoUirYVDvm1eCKpuV5Q8dLPIGO6IczlSDAKIPSSMGwrzw+936PIeTe9rhfTO6/Xq8kFpbo7UY4FP1Yu+F/udEYYwBfgM0zLBkUDxku2KXkJ8BrrehqUODBlxRNJUPakn2vxieRUiy8lW9FwAJQaoOU6ONXBhfy2vCslv/dkirEI0AeMIggTwv9HpreZCRBgBmRfv3sQ2bnZ1pZnEXqeHOdtElyH0DhynM9Tx2mcgfoIta32/mYF5uugHrS91DFc7cPIQ9vzVWCoDNUbU7f0pqUCXdkNqJ/DQAKGb8G99g3j4l+xfPB+eQAAAEhQTFRFTGlx////0+b/Fnj+////////////////////////////CHH++vz/EXb+6vP/w93/Tpj/IX/+NYr+2+v/Zaf/nsf/da//AGb+MBvFJQAAAAp0Uk5TAK3h/4DGEOqTUXGOoe0AAAAJcEhZcwAACxMAAAsTAQCanBgAAAC0ZVhJZklJKgAIAAAABgASAQMAAQAAAAEAAAAaAQUAAQAAAFYAAAAbAQUAAQAAAF4AAAAoAQMAAQAAAAIAAAATAgMAAQAAAAEAAABphwQAAQAAAGYAAAAAAAAASAAAAAEAAABIAAAAAQAAAAYAAJAHAAQAAAAwMjEwAZEHAAQAAAABAgMAAKAHAAQAAAAwMTAwAaADAAEAAAD//wAAAqAEAAEAAABmAAAAA6AEAAEAAABmAAAAAAAAAM/XIvYAAAIpSURBVHja7ZrbkoMgDIbd0RYF4gEPff83XQ5qRWk7IzGzneW/4ka+SQJEQrJsVVXemORIkuxWVtlB94JxdLHi7lOqCyAW5FlU8stUPik//EL9ENiysafiF8vG586uxjCz3gp+uQqNYddjGEFkXHRKCkyZ3SgwN4rQmOBICozMOIkS5pswEkOfMP2kQEQqV1P/FiMHyFEkBvkaUyskSp6Dql9hECl7zhYzIFI0ZwhjelSK5vRBzJQjawphpMLGKBnCADYGghiBjRH/AQPICmJ4ja6UPRMmtKAbdAX3zUMg65HOtIRJmIQ5ibHJdzfKj+k5FtMZPUfb4VZxGDHaq5j+pYfWjhqRQ9ccL2uTiMBAZ3++605jRvuJng7aY3aZbzAnMfMVbDTjfpnOAX01EOM04WZsrc/W6frjJdn57CQGlJ2x1ybMwGEF+hgVY41w169RL2AXJNmtwJDPzmFgjsIgnkHSO+ToMz5FYRafiY3PxBufncS4lTvqTX4Iku+zPOoUcFvF+KyVfpB8rRfyMxjo6tmEbZACPquViME4n9njZR+ksM/OYZrFhAUIy6rYrTMRlQhaK3P4KjsyB03XHtVBFMb9sJo5YDfyBSlJfy2GqGZDU4EiqqdRVQeJap1UlVuiOrRLWtdX1ZHeCODTGwHZi0eqQP0hDNHzKtFjMdHTN9FDPlFbAlGTBVXLCFEDDFE7D1VzElWrFVXjGFUbHFVT39KiiIjwWhR/AY7nRItvjuiTAAAAAElFTkSuQmCC" class="pay-logo" alt="SadaPay">
+            </div>
+            <div class="withdraw-name">SadaPay</div>
             <div class="withdraw-min">Min: 3000 coins</div>
-            <button class="btn" style="width:100%;font-size:12px;padding:8px;" data-method="SadaPay" data-min="3000">Withdraw</button>
+            <button class="btn withdraw-btn">Withdraw</button>
           </div>
         </div>
-        <div style="margin-top:14px;">
-          <div class="card-title" style="margin-bottom:10px;">📋 Withdrawal History</div>
-          <div id="withdraw-history" class="list"><div class="small">Abhi tak koi withdrawal nahi.</div></div>
+
+        <!-- WITHDRAWAL HISTORY - PERMANENT & PROFESSIONAL -->
+        <div style="margin-top:20px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+            <div class="card-title" style="margin:0;">📋 Withdrawal History</div>
+            <span id="w-count-badge" style="background:#e8f5e9;color:#2e7d32;padding:3px 12px;border-radius:12px;font-size:11px;font-weight:700;border:1px solid #c8e6c9;">0</span>
+          </div>
+          <div id="withdraw-history" class="w-history-wrap">
+            <div style="text-align:center;padding:28px 16px;color:var(--text-secondary);">
+              <div style="font-size:36px;margin-bottom:10px;">📭</div>
+              <div style="font-size:13px;">Abhi tak koi withdrawal nahi.</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -299,17 +397,49 @@
   </nav>
 </div>
 
+<!-- WITHDRAW MODAL -->
+<div id="withdraw-modal" class="w-modal-bg hidden">
+  <div class="w-modal">
+    <div class="w-modal-header">
+      <div class="w-modal-logo" id="wm-logo-wrap"></div>
+      <div>
+        <div class="w-modal-title" id="wm-title">Withdrawal</div>
+        <div class="w-modal-sub" id="wm-min-text">Min: – coins</div>
+      </div>
+    </div>
+    <div class="w-balance-box">
+      <div><div class="w-bal-lbl">Aapke Coins</div><div class="w-bal-val" id="wm-bal">0</div></div>
+      <div style="font-size:28px;">💰</div>
+    </div>
+    <label class="w-inp-lbl">Coins Amount</label>
+    <input type="number" id="wm-amount" class="w-inp" placeholder="Kitne coins withdraw karein?">
+    <label class="w-inp-lbl" id="wm-acc-lbl">Account Number</label>
+    <input type="text" id="wm-account" class="w-inp" placeholder="Account number darj karein...">
+    <div class="w-error" id="wm-error"></div>
+    <button class="w-submit" id="wm-submit-btn" onclick="submitWithdrawal()">💸 Request Submit Karein</button>
+    <button class="w-cancel" onclick="closeWithdrawModal()">← Wapas Jao</button>
+  </div>
+</div>
+
 <div id="toast" class="toast"></div>
 <div id="notif-cont" class="notif-cont"></div>
 
 <script>
   let auth, db, currentUserData = {}, isSpinning = false;
-  // completedTasks ab Firestore users doc mein stored hai (completedTaskIds array)
-  // Koi alag collection ya compound query nahi - index ki zaroorat nahi
   let openedTasks = new Set(), completedTasks = new Set(), taskReturnTimers = new Map();
-  let claimInProgress = new Set(); // double-click prevent
+  let claimInProgress = new Set();
+  let _wMethod = '', _wMin = 0;
   const SPIN_COST = 5, REWARDS = [10, 25, 5, 20, 0, 50, 15, 0];
 
+  // ===== PAYMENT LOGOS (base64 embedded) =====
+  const PAY_LOGOS = {
+    Easypaisa: 'data:image/png;base64,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',
+    JazzCash: 'data:image/png;base64,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',
+    SadaPay: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGYAAABmCAMAAAAOARRQAAABP2lDQ1BpY2MAAHicfZC/SwJxGMY/11WWWA05NBQcJU0FUUtTgYZOEfgj1Kbz/FGgdt33QprLoaloiEZrCaLZxhz6A4KgIQqirdWghpKLrw5aUM/yfnh4Xt6XB5TnvFEQ3RoUirYVDvm1eCKpuV5Q8dLPIGO6IczlSDAKIPSSMGwrzw+936PIeTe9rhfTO6/Xq8kFpbo7UY4FP1Yu+F/udEYYwBfgM0zLBkUDxku2KXkJ8BrrehqUODBlxRNJUPakn2vxieRUiy8lW9FwAJQaoOU6ONXBhfy2vCslv/dkirEI0AeMIggTwv9HpreZCRBgBmRfv3sQ2bnZ1pZnEXqeHOdtElyH0DhynM9Tx2mcgfoIta32/mYF5uugHrS91DFc7cPIQ9vzVWCoDNUbU7f0pqUCXdkNqJ/DQAKGb8G99g3j4l+xfPB+eQAAAEhQTFRFTGlx////0+b/Fnj+////////////////////////////CHH++vz/EXb+6vP/w93/Tpj/IX/+NYr+2+v/Zaf/nsf/da//AGb+MBvFJQAAAAp0Uk5TAK3h/4DGEOqTUXGOoe0AAAAJcEhZcwAACxMAAAsTAQCanBgAAAC0ZVhJZklJKgAIAAAABgASAQMAAQAAAAEAAAAaAQUAAQAAAFYAAAAbAQUAAQAAAF4AAAAoAQMAAQAAAAIAAAATAgMAAQAAAAEAAABphwQAAQAAAGYAAAAAAAAASAAAAAEAAABIAAAAAQAAAAYAAJAHAAQAAAAwMjEwAZEHAAQAAAABAgMAAKAHAAQAAAAwMTAwAaADAAEAAAD//wAAAqAEAAEAAABmAAAAA6AEAAEAAABmAAAAAAAAAM/XIvYAAAIpSURBVHja7ZrbkoMgDIbd0RYF4gEPff83XQ5qRWk7IzGzneW/4ka+SQJEQrJsVVXemORIkuxWVtlB94JxdLHi7lOqCyAW5FlU8stUPik//EL9ENiysafiF8vG586uxjCz3gp+uQqNYddjGEFkXHRKCkyZ3SgwN4rQmOBICozMOIkS5pswEkOfMP2kQEQqV1P/FiMHyFEkBvkaUyskSp6Dql9hECl7zhYzIFI0ZwhjelSK5vRBzJQjawphpMLGKBnCADYGghiBjRH/AQPICmJ4ja6UPRMmtKAbdAX3zUMg65HOtIRJmIQ5ibHJdzfKj+k5FtMZPUfb4VZxGDHaq5j+pYfWjhqRQ9ccL2uTiMBAZ3++605jRvuJng7aY3aZbzAnMfMVbDTjfpnOAX01EOM04WZsrc/W6frjJdn57CQGlJ2x1ybMwGEF+hgVY41w169RL2AXJNmtwJDPzmFgjsIgnkHSO+ToMz5FYRafiY3PxBufncS4lTvqTX4Iku+zPOoUcFvF+KyVfpB8rRfyMxjo6tmEbZACPquViME4n9njZR+ksM/OYZrFhAUIy6rYrTMRlQhaK3P4KjsyB03XHtVBFMb9sJo5YDfyBSlJfy2GqGZDU4EiqqdRVQeJap1UlVuiOrRLWtdX1ZHeCODTGwHZi0eqQP0hDNHzKtFjMdHTN9FDPlFbAlGTBVXLCFEDDFE7D1VzElWrFVXjGFUbHFVT39KiiIjwWhR/AY7nRItvjuiTAAAAAElFTkSuQmCC',
+    Bank: null
+  };
+
+    // ── FIREBASE CONFIG ──
   const firebaseConfig = {
   apiKey: "AIzaSyDiw9Lkblug95sFXQIXQB4p6mWePdMvyWE",
   authDomain: "paw-pro-589ab.firebaseapp.com",
@@ -324,9 +454,7 @@
     firebase.initializeApp(firebaseConfig);
     auth = firebase.auth();
     db = firebase.firestore();
-
     db.enablePersistence({ synchronizeTabs: true }).catch(() => {});
-
     loadTaskStates();
 
     auth.onAuthStateChanged(async user => {
@@ -339,29 +467,27 @@
           const doc = await ref.get();
           if (doc.exists) {
             await ref.update({ lastSeen: firebase.firestore.FieldValue.serverTimestamp(), email: user.email });
-            // ✅ completedTaskIds user doc se load karo - koi extra query nahi
             const d = doc.data();
             if (d.completedTaskIds && Array.isArray(d.completedTaskIds)) {
               d.completedTaskIds.forEach(id => completedTasks.add(id));
               saveTaskStates();
             }
           } else {
+            const newCode = genCode();
             await ref.set({
               email: user.email, coins: 500, totalTasks: 0, totalEarned: 500,
-              referralCode: genCode(), lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
+              referralCode: newCode, lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
               createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-              uid: user.uid, country: 'Pakistan',
-              completedTaskIds: [] // ✅ array user doc mein
+              uid: user.uid, country: 'Pakistan', completedTaskIds: [],
+              referralCount: 0, referralEarned: 0
             });
             notify('🎉 Khush Aamdeed! 500 welcome coins mile!', 'success');
           }
         } catch (e) { console.error('User init error:', e); }
 
-        // Real-time listener
         ref.onSnapshot(doc => {
           if (doc.exists) {
             const d = doc.data();
-            // completedTaskIds sync karo
             if (d.completedTaskIds && Array.isArray(d.completedTaskIds)) {
               d.completedTaskIds.forEach(id => completedTasks.add(id));
               saveTaskStates();
@@ -379,9 +505,7 @@
       } else {
         document.getElementById('auth-container').classList.remove('hidden');
         document.getElementById('main-app').classList.remove('visible');
-        openedTasks = new Set();
-        completedTasks = new Set();
-        claimInProgress = new Set();
+        openedTasks = new Set(); completedTasks = new Set(); claimInProgress = new Set();
       }
     });
   } catch (e) {
@@ -400,19 +524,38 @@
       const o = localStorage.getItem('openedTasks'), c = localStorage.getItem('completedTasks');
       if (o) openedTasks = new Set(JSON.parse(o));
       if (c) completedTasks = new Set(JSON.parse(c));
-    } catch (e) { }
+    } catch (e) {}
   }
 
   function saveTaskStates() {
     try {
       localStorage.setItem('openedTasks', JSON.stringify([...openedTasks]));
       localStorage.setItem('completedTasks', JSON.stringify([...completedTasks]));
-    } catch (e) { }
+    } catch (e) {}
   }
 
   function genCode() {
     const c = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
     return Array.from({ length: 6 }, () => c[Math.floor(Math.random() * c.length)]).join('');
+  }
+
+  function genTxnId() {
+    const c = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    return 'TXN-' + Array.from({ length: 12 }, () => c[Math.floor(Math.random() * c.length)]).join('');
+  }
+
+  function maskAccount(num) {
+    if (!num) return '–';
+    const s = String(num).trim();
+    if (s.length <= 6) return s;
+    return s.slice(0, 4) + '****' + s.slice(-3);
+  }
+
+  function formatDateTime(ts) {
+    if (!ts) return 'Haal hi mein';
+    const d = ts.toDate ? ts.toDate() : new Date(ts);
+    return d.toLocaleDateString('en-PK', { day: '2-digit', month: 'short', year: 'numeric' }) +
+      ' ' + d.toLocaleTimeString('en-PK', { hour: '2-digit', minute: '2-digit', hour12: true });
   }
 
   function set(id, val) { const e = document.getElementById(id); if (e) e.textContent = val; }
@@ -445,10 +588,12 @@
     set('total-tasks', data.totalTasks || 0);
     set('total-earned', (data.totalEarned || 0).toLocaleString());
     set('profile-coins', (data.coins || 0).toLocaleString());
+    set('ref-count', data.referralCount || 0);
+    set('ref-earned', (data.referralEarned || 0).toLocaleString());
     if (data.referralCode) set('ref-code', data.referralCode);
     else {
       const code = genCode();
-      db.collection('users').doc(user.uid).update({ referralCode: code }).catch(() => { });
+      db.collection('users').doc(user.uid).update({ referralCode: code }).catch(() => {});
       set('ref-code', code);
     }
     const name = user.email.split('@')[0];
@@ -530,7 +675,7 @@
       try {
         await db.collection('users').doc(user.uid).update({ coins: firebase.firestore.FieldValue.increment(SPIN_COST) });
         currentUserData.coins = (currentUserData.coins || 0) + SPIN_COST; updateDisplay();
-      } catch (_) { }
+      } catch (_) {}
     } finally {
       isSpinning = false; btn.disabled = false; btn.innerHTML = '🎰 SPIN KARO (5 coins)';
       setTimeout(() => wheel.style.transform = 'rotate(0deg)', 2000); loadSpinStatus();
@@ -572,64 +717,40 @@
           list.appendChild(item);
         });
       }, err => {
-        console.error('Tasks snapshot error:', err);
-        list.innerHTML = '<div class="small" style="padding:10px;color:red;">Tasks load nahi hueen. Internet check karo ya refresh karo.</div>';
+        list.innerHTML = '<div class="small" style="padding:10px;color:red;">Tasks load nahi hueen. Refresh karo.</div>';
       });
     } catch (e) {
-      list.innerHTML = '<div class="small" style="padding:10px;">Connection error. Internet check karo.</div>';
+      list.innerHTML = '<div class="small" style="padding:10px;">Connection error.</div>';
     }
   }
 
-  // ✅ MAIN FIX: claimTask - user doc mein completedTaskIds array use karo
-  // Koi compound query nahi, koi extra index nahi, koi permission issue nahi
   window.claimTask = async function (taskId, coins) {
     const user = auth.currentUser;
     if (!user) { showToast('Pehle sign in karo', 'error'); return; }
-
-    // Already processing check
     if (claimInProgress.has(taskId)) { notify('⏳ Pehle ka claim chal raha hai...', 'info'); return; }
-
     const el = document.querySelector(`[data-task-id="${taskId}"]`);
-
-    // Link wala task - pehle khola ya nahi
     if (el && !openedTasks.has(taskId) && el.querySelector('button[onclick*="openTaskLink"]')) {
       notify('❌ Pehle task link kholo!', 'error'); return;
     }
-
-    // Local completed check
     if (completedTasks.has(taskId)) {
       notify('✅ Yeh task pehle hi complete ho chuka!', 'info');
-      // UI fix karo agar button abhi bhi show ho raha
       const tb = el ? el.querySelector('.task-buttons') : null;
       if (tb) tb.innerHTML = '<div style="background:#e8f5e9;color:#2e7d32;padding:7px 12px;border-radius:8px;font-size:11px;font-weight:700;">✅ Mukammal</div>';
       if (el) el.style.opacity = '0.7';
       return;
     }
-
-    // Button disable + progress track
     claimInProgress.add(taskId);
     const claimBtn = el ? el.querySelector('.task-buttons button') : null;
     if (claimBtn) { claimBtn.disabled = true; claimBtn.textContent = '⏳ Ho raha hai...'; }
-
     try {
       notify('Task claim ho raha hai...', 'info');
-
       const uRef = db.collection('users').doc(user.uid);
-
-      // ✅ Single transaction - sirf user doc update karo
-      // task_activities collection ki zaroorat nahi - no index required
       await db.runTransaction(async tx => {
         const ud = await tx.get(uRef);
-        if (!ud.exists) throw new Error('User data nahi mila. Dobara login karo.');
-
+        if (!ud.exists) throw new Error('User data nahi mila.');
         const d = ud.data();
         const existingCompleted = d.completedTaskIds || [];
-
-        // ✅ Transaction ke andar bhi check karo - race condition prevent
-        if (existingCompleted.includes(taskId)) {
-          throw new Error('ALREADY_CLAIMED');
-        }
-
+        if (existingCompleted.includes(taskId)) throw new Error('ALREADY_CLAIMED');
         tx.update(uRef, {
           coins: firebase.firestore.FieldValue.increment(coins),
           totalTasks: firebase.firestore.FieldValue.increment(1),
@@ -638,49 +759,25 @@
           lastSeen: firebase.firestore.FieldValue.serverTimestamp()
         });
       });
-
-      // ✅ Success - UI update
       notify(`🎉 Task mukammal! +${coins} coins mile!`, 'success');
       animateCoin();
-
       const tb = el ? el.querySelector('.task-buttons') : null;
       if (tb) tb.innerHTML = '<div style="background:#e8f5e9;color:#2e7d32;padding:7px 12px;border-radius:8px;font-size:11px;font-weight:700;">✅ Mukammal</div>';
       if (el) el.style.opacity = '0.7';
-
-      // Local state
-      if (currentUserData) {
-        currentUserData.coins = (currentUserData.coins || 0) + coins;
-        currentUserData.totalTasks = (currentUserData.totalTasks || 0) + 1;
-        currentUserData.totalEarned = (currentUserData.totalEarned || 0) + coins;
-        updateDisplay();
-      }
-      openedTasks.delete(taskId);
-      completedTasks.add(taskId);
-      saveTaskStates();
-
-      // Activity log alag try - fail hoi toh task complete mana jaye
-      try {
-        await db.collection('task_activities').add({
-          userId: user.uid, userEmail: user.email, taskId,
-          action: 'completed', coinsEarned: coins,
-          timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        });
-      } catch (_) { /* non-critical */ }
-
+      completedTasks.add(taskId); openedTasks.delete(taskId); saveTaskStates();
+      currentUserData.coins = (currentUserData.coins || 0) + coins;
+      currentUserData.totalTasks = (currentUserData.totalTasks || 0) + 1;
+      currentUserData.totalEarned = (currentUserData.totalEarned || 0) + coins;
+      updateDisplay();
     } catch (e) {
-      console.error('claimTask error:', e);
-
       if (e.message === 'ALREADY_CLAIMED') {
-        completedTasks.add(taskId);
-        saveTaskStates();
         notify('✅ Yeh task pehle hi complete ho chuka!', 'info');
+        completedTasks.add(taskId); saveTaskStates();
         const tb = el ? el.querySelector('.task-buttons') : null;
         if (tb) tb.innerHTML = '<div style="background:#e8f5e9;color:#2e7d32;padding:7px 12px;border-radius:8px;font-size:11px;font-weight:700;">✅ Mukammal</div>';
-        if (el) el.style.opacity = '0.7';
       } else {
-        // Button wapas enable karo
-        if (claimBtn) { claimBtn.disabled = false; claimBtn.textContent = `🎁 ${coins} Coins Lo`; }
-        notify('Task claim mein error. Dobara try karo.', 'error');
+        console.error(e); notify('Task claim mein error. Dobara try karo.', 'error');
+        if (claimBtn) { claimBtn.disabled = false; claimBtn.textContent = '🎁 Claim Karo'; }
       }
     } finally {
       claimInProgress.delete(taskId);
@@ -691,11 +788,10 @@
     if (!link) { notify('Koi link nahi hai', 'error'); return; }
     const msgs = { youtube: '📺 Video dekho, like/subscribe karo, phir wapas aao!', survey: '📋 Survey complete karo, phir wapas aao!', social: '📱 Follow/like karo, phir wapas aao!' };
     notify(msgs[taskType] || '🔗 Task complete karo aur wapas aao!', 'info', 5000);
-    openedTasks.add(taskId);
-    saveTaskStates();
+    openedTasks.add(taskId); saveTaskStates();
     taskReturnTimers.set(taskId, setTimeout(() => {
       updateTaskBtn(taskId, taskType);
-      notify('✅ Wapas aaiye! Ab reward claim karo.', 'success', 3000);
+      notify('✅ Wapas aaiye! Reward claim karo.', 'success', 3000);
       taskReturnTimers.delete(taskId);
     }, 10000));
     const w = window.open(link, '_blank');
@@ -713,49 +809,160 @@
       if (!document.hidden) {
         taskReturnTimers.forEach((t, id) => {
           clearTimeout(t);
-          setTimeout(() => {
-            updateTaskBtn(id);
-            notify('✅ Wapas aaiye! Reward claim karo.', 'success', 4000);
-          }, 1000);
+          setTimeout(() => { updateTaskBtn(id); notify('✅ Wapas aaiye! Reward claim karo.', 'success', 4000); }, 1000);
         });
         taskReturnTimers.clear();
       }
     });
   }
 
+  // ===== WITHDRAWAL HISTORY - PERMANENT & PROFESSIONAL =====
+  function buildWCard(d) {
+    const status = d.status || 'pending';
+    const statusMap = {
+      pending:  { cls: 'processing', label: '⏳ Processing', dotColor: '#f57c00' },
+      approved: { cls: 'completed',  label: '✅ Completed',  dotColor: '#2e7d32' },
+      rejected: { cls: 'rejected',   label: '❌ Rejected',   dotColor: '#c62828' }
+    };
+    const s = statusMap[status] || statusMap.pending;
+    const logoSrc = PAY_LOGOS[d.method];
+    const logoHtml = logoSrc
+      ? `<img src="${logoSrc}" style="width:28px;height:28px;object-fit:contain;" alt="${d.method}">`
+      : '<span style="font-size:22px;">🏦</span>';
+
+    return `<div class="w-card ${s.cls}">
+      <div class="w-top-row">
+        <div class="w-method-logo">${logoHtml}</div>
+        <div class="w-method-info">
+          <div class="w-method-name">${d.method || '–'}</div>
+          <div class="w-coins-amount">${(d.coins || 0).toLocaleString()} coins</div>
+        </div>
+        <span class="w-status-badge ${s.cls}">${s.label}</span>
+      </div>
+      <div class="w-details">
+        <div class="w-detail-row">
+          <span class="w-detail-label">📱 Account</span>
+          <span class="w-detail-val">${maskAccount(d.destination)}</span>
+        </div>
+        <div class="w-detail-row">
+          <span class="w-detail-label">📅 Date &amp; Time</span>
+          <span class="w-detail-val" style="font-family:inherit;">${formatDateTime(d.createdAt)}</span>
+        </div>
+        <div class="w-detail-row">
+          <span class="w-detail-label">🔖 TXN ID</span>
+          <span class="w-detail-val">${d.txnId || '–'}</span>
+        </div>
+      </div>
+      ${d.rejectionReason ? `<div class="w-reject-reason">❌ Wajah: ${d.rejectionReason}</div>` : ''}
+    </div>`;
+  }
+
   async function loadWithdrawHistory(uid) {
     try {
-      db.collection('withdraw_requests').where('userId', '==', uid).orderBy('createdAt', 'desc').limit(10).onSnapshot(snap => {
-        const cont = document.getElementById('withdraw-history');
-        if (snap.empty) { cont.innerHTML = '<div class="small">Abhi tak koi withdrawal nahi.</div>'; set('profile-withdrawals', '0'); return; }
-        cont.innerHTML = ''; let count = 0;
-        snap.forEach(doc => {
-          count++;
-          const d = doc.data();
-          const item = document.createElement('div');
-          item.className = 'list-item';
-          const sm = { approved: { label: '✅ Approved', cls: 'approved' }, rejected: { label: '❌ Rejected', cls: 'rejected' }, pending: { label: '⏳ Pending', cls: 'pending' } };
-          const s = sm[d.status] || sm.pending;
-          item.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;"><div><strong>${d.method} – ${d.coins} coins</strong><div class="small">${d.destination || ''}</div><div class="small">${d.createdAt?.toDate()?.toLocaleDateString('en-PK') || 'Haal hi mein'}${d.rejectionReason ? ` • ${d.rejectionReason}` : ''}</div></div><span class="badge ${s.cls}">${s.label}</span></div>`;
-          cont.appendChild(item);
-        });
-        set('profile-withdrawals', count);
-        if (!window.wInit) { window.wInit = true; } else {
-          snap.docChanges().forEach(ch => {
-            if (ch.type === 'modified') {
-              const d = ch.doc.data();
-              if (d.status === 'approved') notify(`✅ ${d.coins} coins ki withdrawal approve!`, 'success');
-              else if (d.status === 'rejected') notify(`❌ Withdrawal reject hui${d.rejectionReason ? ': ' + d.rejectionReason : ''}`, 'error');
-            }
+      db.collection('withdraw_requests')
+        .where('userId', '==', uid)
+        .orderBy('createdAt', 'desc')
+        .limit(50)
+        .onSnapshot(snap => {
+          const cont = document.getElementById('withdraw-history');
+          const badge = document.getElementById('w-count-badge');
+          if (!cont) return;
+          if (snap.empty) {
+            cont.innerHTML = '<div style="text-align:center;padding:28px 16px;color:var(--text-secondary);"><div style="font-size:36px;margin-bottom:10px;">📭</div><div style="font-size:13px;">Abhi tak koi withdrawal nahi.</div></div>';
+            if (badge) badge.textContent = '0';
+            set('profile-withdrawals', '0'); return;
+          }
+          cont.innerHTML = '';
+          let count = 0;
+          snap.forEach(doc => {
+            count++;
+            const d = doc.data();
+            const div = document.createElement('div');
+            div.innerHTML = buildWCard(d);
+            cont.appendChild(div.firstElementChild);
           });
-        }
-      });
+          if (badge) badge.textContent = count;
+          set('profile-withdrawals', count);
+          if (!window.wHistInit) { window.wHistInit = true; } else {
+            snap.docChanges().forEach(ch => {
+              if (ch.type === 'modified') {
+                const d = ch.doc.data();
+                if (d.status === 'approved') notify(`✅ ${d.coins} coins ki withdrawal Completed!`, 'success', 6000);
+                else if (d.status === 'rejected') notify(`❌ Withdrawal reject hui${d.rejectionReason ? ': ' + d.rejectionReason : ''}`, 'error', 6000);
+              }
+            });
+          }
+        }, err => { console.error('Withdraw history error:', err); });
     } catch (e) { console.error(e); }
   }
 
+  // ===== WITHDRAW MODAL =====
+  window.openWithdrawModal = function (method, min) {
+    _wMethod = method; _wMin = min;
+    const coins = currentUserData.coins || 0;
+    document.getElementById('wm-title').textContent = method + ' Withdrawal';
+    document.getElementById('wm-min-text').textContent = `Min: ${min} coins`;
+    document.getElementById('wm-bal').textContent = coins.toLocaleString();
+    document.getElementById('wm-error').textContent = '';
+    document.getElementById('wm-amount').value = '';
+    document.getElementById('wm-account').value = '';
+    const lblMap = {
+      Easypaisa: '📱 Easypaisa Number (03XXXXXXXXX)',
+      JazzCash: '🎵 JazzCash Number (03XXXXXXXXX)',
+      Bank: '🏦 Bank IBAN / Account Number',
+      SadaPay: '📲 SadaPay Number (03XXXXXXXXX)'
+    };
+    document.getElementById('wm-acc-lbl').textContent = lblMap[method] || '📱 Account Number';
+    const logoWrap = document.getElementById('wm-logo-wrap');
+    const logoSrc = PAY_LOGOS[method];
+    logoWrap.innerHTML = logoSrc
+      ? `<img src="${logoSrc}" style="width:30px;height:30px;object-fit:contain;" alt="${method}">`
+      : '<span style="font-size:24px;">🏦</span>';
+    document.getElementById('withdraw-modal').classList.remove('hidden');
+  };
+
+  window.closeWithdrawModal = function () {
+    document.getElementById('withdraw-modal').classList.add('hidden');
+  };
+
+  window.submitWithdrawal = async function () {
+    const user = auth.currentUser; if (!user) return;
+    const amtEl = document.getElementById('wm-amount');
+    const accEl = document.getElementById('wm-account');
+    const errEl = document.getElementById('wm-error');
+    const c = parseInt(amtEl.value);
+    const dest = accEl.value.trim();
+    const curr = currentUserData.coins || 0;
+    if (isNaN(c) || c < _wMin) { errEl.textContent = `Minimum ${_wMin} coins darj karein.`; return; }
+    if (c > curr) { errEl.textContent = `Aapke paas sirf ${curr} coins hain.`; return; }
+    if (!dest || dest.length < 5) { errEl.textContent = 'Valid account number darj karein (minimum 5 digits).'; return; }
+    errEl.textContent = '';
+    const btn = document.getElementById('wm-submit-btn');
+    btn.disabled = true; btn.textContent = '⏳ Submit ho raha hai...';
+    try {
+      const txnId = genTxnId();
+      await db.collection('withdraw_requests').add({
+        userId: user.uid, email: user.email, method: _wMethod,
+        destination: dest, coins: c, status: 'pending',
+        txnId: txnId,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        userName: user.email.split('@')[0], country: 'Pakistan'
+      });
+      await db.collection('users').doc(user.uid).update({
+        coins: firebase.firestore.FieldValue.increment(-c),
+        lastWithdrawal: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      closeWithdrawModal();
+      notify(`✅ ${c} coins ki request submit! TXN: ${txnId}`, 'success', 6000);
+    } catch (e) {
+      console.error(e); errEl.textContent = 'Error aaya. Dobara try karein.';
+    } finally {
+      btn.disabled = false; btn.textContent = '💸 Request Submit Karein';
+    }
+  };
+
   async function loadRecentActivity(uid) {
     try {
-      // Simple query - sirf userId filter, koi compound query nahi
       db.collection('task_activities').where('userId', '==', uid)
         .orderBy('timestamp', 'desc').limit(10)
         .onSnapshot(snap => {
@@ -772,7 +979,6 @@
             cont.appendChild(item);
           });
         }, () => {
-          // Activity load fail hoi toh silent ignore
           const cont = document.getElementById('recent-activity');
           if (cont) cont.innerHTML = '<div class="small">Activity load nahi hui.</div>';
         });
@@ -789,7 +995,7 @@
           if (ch.type === 'added') { const n = ch.doc.data(); notify(n.message, n.type || 'info'); }
         });
       }, () => {});
-    } catch (e) { }
+    } catch (e) {}
   }
 
   function setupUserStatusListener(uid) {
@@ -802,20 +1008,24 @@
           updateUI(d, auth.currentUser);
         }
       });
-    } catch (e) { }
+    } catch (e) {}
   }
 
+  // ===== AUTH - SIGN IN =====
   async function handleSignIn(e) {
     e.preventDefault();
-    const email = document.getElementById('email-input').value.trim(), pass = document.getElementById('password-input').value;
+    const email = document.getElementById('email-input').value.trim();
+    const pass = document.getElementById('password-input').value;
     const msg = document.getElementById('auth-message'), btn = document.getElementById('signin-btn');
     if (!email || !pass) { msg.textContent = 'Email aur password enter karo'; msg.className = 'form-message error'; return; }
     try {
       btn.textContent = 'Sign in ho raha hai...'; btn.disabled = true;
       msg.textContent = 'Connect ho raha hai...'; msg.className = 'form-message info';
       await auth.signInWithEmailAndPassword(email, pass);
-      msg.textContent = 'Sign in hua! App load ho rahi hai...'; msg.className = 'form-message success';
+      msg.textContent = 'Sign in hua!'; msg.className = 'form-message success';
       showToast('Khush Aamdeed! 👋');
+      // Hide referral field on login
+      document.getElementById('ref-code-wrap').style.display = 'none';
     } catch (err) {
       const errs = {
         'auth/user-not-found': '🔍 Account nahi mila. Naya account banao.',
@@ -830,24 +1040,82 @@
     }
   }
 
+  // ===== AUTH - SIGN UP WITH REFERRAL =====
   async function handleSignUp(e) {
     e.preventDefault();
-    const email = document.getElementById('email-input').value.trim(), pass = document.getElementById('password-input').value;
+    const email = document.getElementById('email-input').value.trim();
+    const pass = document.getElementById('password-input').value;
+    const refInput = document.getElementById('ref-code-input').value.trim().toUpperCase();
     const msg = document.getElementById('auth-message'), btn = document.getElementById('signup-btn');
-    if (!email || pass.length < 6) { msg.textContent = 'Sahih email aur 6+ characters ka password darj karo'; msg.className = 'form-message error'; return; }
+    if (!email || pass.length < 6) {
+      msg.textContent = 'Sahih email aur 6+ characters ka password darj karo'; msg.className = 'form-message error'; return;
+    }
+    // Show referral field if hidden
+    const refWrap = document.getElementById('ref-code-wrap');
+    if (refWrap.style.display === 'none') {
+      refWrap.style.display = 'block';
+      msg.textContent = 'Referral code darj karein (optional) aur dobara click karein.'; msg.className = 'form-message info';
+      return;
+    }
     try {
       btn.textContent = 'Account ban raha hai...'; btn.disabled = true;
       msg.textContent = 'Account ban raha hai...'; msg.className = 'form-message info';
+
+      // ✅ Verify referral code BEFORE creating account
+      let referrerUid = null;
+      if (refInput && refInput.length >= 4) {
+        const refSnap = await db.collection('users').where('referralCode', '==', refInput).limit(1).get();
+        if (refSnap.empty) {
+          msg.textContent = '❌ Referral code galat hai ya exist nahi karta.'; msg.className = 'form-message error';
+          btn.textContent = '✨ Naya Account Banao'; btn.disabled = false; return;
+        }
+        referrerUid = refSnap.docs[0].id;
+      }
+
       const cred = await auth.createUserWithEmailAndPassword(email, pass);
-      try {
-        await db.collection('users').doc(cred.user.uid).set({
-          email: cred.user.email, coins: 500, totalTasks: 0, totalEarned: 500,
-          referralCode: genCode(), createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-          uid: cred.user.uid, country: 'Pakistan',
-          completedTaskIds: []
-        });
-      } catch (de) { console.error(de); }
-      msg.textContent = 'Account ban gaya! 500 welcome coins mile! 🎉'; msg.className = 'form-message success';
+      const newCode = genCode();
+
+      // ✅ Create new user doc
+      await db.collection('users').doc(cred.user.uid).set({
+        email: cred.user.email, coins: 500, totalTasks: 0, totalEarned: 500,
+        referralCode: newCode, createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        uid: cred.user.uid, country: 'Pakistan', completedTaskIds: [],
+        referralCount: 0, referralEarned: 0,
+        usedReferralCode: refInput || null,
+        referredBy: referrerUid || null
+      });
+
+      // ✅ If valid referral - reward referrer using transaction (no duplicates)
+      if (referrerUid) {
+        try {
+          await db.runTransaction(async tx => {
+            const refUserRef = db.collection('users').doc(referrerUid);
+            const refUserDoc = await tx.get(refUserRef);
+            if (!refUserDoc.exists) return;
+            // Prevent duplicate referral rewards
+            const refData = refUserDoc.data();
+            const alreadyRewarded = (refData.referredUsers || []).includes(cred.user.uid);
+            if (alreadyRewarded) return;
+            tx.update(refUserRef, {
+              coins: firebase.firestore.FieldValue.increment(100),
+              totalEarned: firebase.firestore.FieldValue.increment(100),
+              referralCount: firebase.firestore.FieldValue.increment(1),
+              referralEarned: firebase.firestore.FieldValue.increment(100),
+              referredUsers: firebase.firestore.FieldValue.arrayUnion(cred.user.uid)
+            });
+          });
+          // Save referral record permanently
+          await db.collection('referral_records').add({
+            referrerId: referrerUid, newUserId: cred.user.uid,
+            newUserEmail: cred.user.email, coinsAwarded: 100,
+            referralCode: refInput,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          msg.textContent = '🎉 Account ban gaya! Referral bonus diya gaya! +500 coins mile!'; msg.className = 'form-message success';
+        } catch (refErr) { console.error('Referral error:', refErr); }
+      } else {
+        msg.textContent = 'Account ban gaya! 500 welcome coins mile! 🎉'; msg.className = 'form-message success';
+      }
       showToast('Khush Aamdeed! 500 bonus coins! 🎉');
     } catch (err) {
       const errs = {
@@ -895,7 +1163,8 @@
     document.getElementById('logout').addEventListener('click', () => { auth.signOut(); showToast('Sign out ho gaye'); });
 
     document.getElementById('copy-ref').addEventListener('click', async () => {
-      const code = document.getElementById('ref-code').textContent, url = `${location.origin}${location.pathname}?ref=${code}`;
+      const code = document.getElementById('ref-code').textContent;
+      const url = `${location.origin}${location.pathname}?ref=${code}`;
       try { await navigator.clipboard.writeText(url); showToast('Referral link copy ho gaya! 📋'); } catch (_) { showToast('Copy nahi hua', 'error'); }
     });
     document.getElementById('share-wa').addEventListener('click', () => {
@@ -907,30 +1176,23 @@
       window.open(`https://t.me/share/url?url=${encodeURIComponent(location.origin + location.pathname + '?ref=' + code)}&text=${encodeURIComponent('🇵🇰 Mreward PRO Pakistan join karo!')}`, '_blank');
     });
 
-    document.querySelectorAll('[data-method]').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const method = btn.dataset.method, min = parseInt(btn.dataset.min), user = auth.currentUser;
-        if (!user) { alert('Pehle sign in karo'); return; }
-        const snap = await db.collection('users').doc(user.uid).get(), d = snap.data() || {}, curr = d.coins || 0;
-        if (curr < min) { notify(`Insufficient coins! ${min} chahiye, aapke paas ${curr} hain.`, 'error'); return; }
-        const amt = prompt(`Kitne coins nikalna chahte ho? (Min: ${min}, Max: ${curr})`); if (!amt) return;
-        const c = parseInt(amt); if (isNaN(c) || c < min || c > curr) { notify('Galat amount', 'error'); return; }
-        const promptText = method === 'Bank' ? 'Bank account number aur IBAN darj karein:' : method === 'Easypaisa' ? 'Easypaisa account number darj karein:' : method === 'JazzCash' ? 'JazzCash account number darj karein:' : 'SadaPay account number darj karein:';
-        const dest = prompt(promptText); if (!dest) return;
-        try {
-          await db.collection('withdraw_requests').add({
-            userId: user.uid, email: user.email, method, destination: dest, coins: c,
-            status: 'pending', createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            userName: user.email.split('@')[0], country: 'Pakistan'
-          });
-          await db.collection('users').doc(user.uid).update({
-            coins: firebase.firestore.FieldValue.increment(-c),
-            lastWithdrawal: firebase.firestore.FieldValue.serverTimestamp()
-          });
-          notify(`✅ ${c} coins ki request submit! 24-48 ghante mein process hogi.`, 'success');
-        } catch (e) { console.error(e); notify('Withdrawal error. Dobara try karo.', 'error'); }
-      });
+    // Close modal on background click
+    document.getElementById('withdraw-modal').addEventListener('click', function(e) {
+      if (e.target === this) closeWithdrawModal();
     });
+
+    // Handle referral code from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlRef = urlParams.get('ref');
+    if (urlRef) {
+      const refInput = document.getElementById('ref-code-input');
+      if (refInput) { refInput.value = urlRef.toUpperCase(); }
+    }
+
+    // Toggle referral field: show on signup, hide on signin
+    document.getElementById('signup-btn').addEventListener('mouseenter', () => {
+      document.getElementById('ref-code-wrap').style.display = 'block';
+    }, { once: false });
 
     document.querySelectorAll('.nav-item').forEach(item => {
       item.addEventListener('click', () => switchTab(item.dataset.tab));
