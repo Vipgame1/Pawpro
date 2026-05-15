@@ -205,11 +205,6 @@
     <input type="password" id="signup-pass" class="input-field" placeholder="Password banao">
     <label class="input-label">🔒 Confirm Password</label>
     <input type="password" id="signup-confirm" class="input-field" placeholder="Password dobara darj karein">
-    <div style="background:#f0f9f0;border-radius:10px;padding:10px 12px;margin-bottom:10px;border:1px solid #c8e6c9;">
-      <div style="font-size:12px;color:#2e7d32;font-weight:700;margin-bottom:4px;">🎁 Referral Code (Optional)</div>
-      <div style="font-size:11px;color:var(--text-secondary);margin-bottom:6px;">Kisi dost ka code? +100 bonus coins milenge!</div>
-      <input type="text" id="ref-code-input" class="input-field" placeholder="e.g. ABC123" maxlength="8" style="text-transform:uppercase;letter-spacing:2px;margin-bottom:0;height:44px;">
-    </div>
     <button id="signup-btn" class="btn-primary" style="margin-top:6px;">✅ Account Banao</button>
     <button type="button" onclick="showSignin()" class="btn-secondary" style="margin-top:4px;">← Wapas Sign In</button>
     <div id="signup-message" class="form-message"></div>
@@ -418,6 +413,22 @@
       <div class="card">
         <div class="card-title">📈 Recent Activity</div>
         <div id="recent-activity" class="list"><div class="small">Koi activity nahi abhi tak.</div></div>
+      </div>
+      <!-- PROMO CODE SECTION -->
+      <div class="card" id="promo-code-card">
+        <div class="card-title">🎁 Promo / Referral Code Apply Karo</div>
+        <p class="small" style="margin-bottom:14px;">Kisi dost ka referral code enter karo aur dono ko <strong style="color:var(--primary);">100 bonus coins</strong> milenge!</p>
+        <div id="promo-already-used" class="hidden" style="background:#e8f5e9;border:1px solid #a5d6a7;border-radius:10px;padding:12px 14px;text-align:center;">
+          <div style="font-size:18px;margin-bottom:4px;">✅</div>
+          <div style="font-size:13px;font-weight:700;color:#2e7d32;">Aap ne pehle se promo code use kiya hai!</div>
+          <div id="promo-used-code" class="small" style="margin-top:4px;color:#2e7d32;font-weight:600;letter-spacing:2px;"></div>
+        </div>
+        <div id="promo-input-section">
+          <label class="input-label">Promo / Referral Code</label>
+          <input type="text" id="promo-code-input" class="input-field" placeholder="e.g. ABC123" maxlength="8" style="text-transform:uppercase;letter-spacing:2px;">
+          <button id="apply-promo-btn" class="btn-enhanced" onclick="applyPromoCode()">🎁 Code Apply Karo (+100 Coins)</button>
+          <div id="promo-message" class="form-message" style="margin-top:10px;"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -634,6 +645,7 @@
     const name = user.email.split('@')[0];
     set('profile-name', name); set('profile-email', user.email);
     const av = document.getElementById('avatar'); if (av) av.textContent = user.email[0].toUpperCase();
+    refreshPromoCodeUI(data);
     const today = new Date().toISOString().slice(0, 10);
     if (data.lastClaim === today) {
       set('daily-status', '✅');
@@ -1079,13 +1091,6 @@
     document.getElementById('signin-card').style.display = 'none';
     document.getElementById('signup-card').style.display = 'block';
     document.getElementById('signup-message').textContent = '';
-    // Auto-fill referral from URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const urlRef = urlParams.get('ref');
-    if (urlRef) {
-      const rf = document.getElementById('ref-code-input');
-      if (rf && !rf.value) rf.value = urlRef.toUpperCase();
-    }
   }
 
   async function handleSignIn(e) {
@@ -1115,96 +1120,44 @@
     }
   }
 
-  // ===== AUTH - SIGN UP WITH REFERRAL =====
-  // ROOT CAUSE FIX: Firestore rules block new user from writing to referrer's doc.
-  // Solution: Store referral in "pending_referrals" collection (new user writes own doc).
-  // When referrer logs in, processPendingReferrals() picks it up and rewards them.
-  // This is 100% secure, no rule changes needed.
-
+  // ===== AUTH - SIGN UP (clean — no referral at signup) =====
   async function handleSignUp(e) {
     if (e) e.preventDefault();
-    const email    = document.getElementById('signup-email').value.trim();
-    const pass     = document.getElementById('signup-pass').value;
-    const conf     = document.getElementById('signup-confirm').value;
-    const refInput = (document.getElementById('ref-code-input').value || '').trim().toUpperCase();
-    const msg = document.getElementById('signup-message');
-    const btn = document.getElementById('signup-btn');
+    const email = document.getElementById('signup-email').value.trim();
+    const pass  = document.getElementById('signup-pass').value;
+    const conf  = document.getElementById('signup-confirm').value;
+    const msg   = document.getElementById('signup-message');
+    const btn   = document.getElementById('signup-btn');
 
-    // ── Validation ──
-    if (!email) {
-      msg.textContent = '📧 Email darj karein.'; msg.className = 'form-message error'; return;
-    }
-    if (pass.length < 6) {
-      msg.textContent = '🔒 Password kam se kam 6 characters ka hona chahiye.'; msg.className = 'form-message error'; return;
-    }
-    if (pass !== conf) {
-      msg.textContent = '❌ Passwords match nahi kar rahe. Dobara check karein.'; msg.className = 'form-message error'; return;
-    }
+    if (!email) { msg.textContent = '📧 Email darj karein.'; msg.className = 'form-message error'; return; }
+    if (pass.length < 6) { msg.textContent = '🔒 Password kam se kam 6 characters ka hona chahiye.'; msg.className = 'form-message error'; return; }
+    if (pass !== conf) { msg.textContent = '❌ Passwords match nahi kar rahe.'; msg.className = 'form-message error'; return; }
 
     try {
       btn.textContent = 'Tayaar ho raha hai...'; btn.disabled = true;
-      msg.textContent = 'Please wait...'; msg.className = 'form-message info';
-
-      // ── STEP 1: Verify referral code if provided ──
-      let referrerUid = null;
-      let referrerCode = null;
-      if (refInput.length >= 4) {
-        msg.textContent = 'Referral code verify ho raha hai...'; msg.className = 'form-message info';
-        const refSnap = await db.collection('users')
-          .where('referralCode', '==', refInput).limit(1).get();
-        if (refSnap.empty) {
-          msg.textContent = '❌ Referral code galat hai ya exist nahi karta. Sahi code darj karein ya khali chhod dein.';
-          msg.className = 'form-message error';
-          btn.textContent = '✅ Account Banao'; btn.disabled = false; return;
-        }
-        referrerUid  = refSnap.docs[0].id;
-        referrerCode = refInput;
-      }
-
-      // ── STEP 2: Create Firebase Auth account ──
       msg.textContent = 'Account ban raha hai...'; msg.className = 'form-message info';
+
       const cred = await auth.createUserWithEmailAndPassword(email, pass);
       const newCode = genCode();
 
-      // ── STEP 3: Save new user document ──
       await db.collection('users').doc(cred.user.uid).set({
-        email        : cred.user.email,
-        coins        : 500,
-        totalTasks   : 0,
-        totalEarned  : 500,
-        referralCode : newCode,
-        createdAt    : firebase.firestore.FieldValue.serverTimestamp(),
-        uid          : cred.user.uid,
-        country      : 'Pakistan',
+        email            : cred.user.email,
+        coins            : 500,
+        totalTasks       : 0,
+        totalEarned      : 500,
+        referralCode     : newCode,
+        createdAt        : firebase.firestore.FieldValue.serverTimestamp(),
+        uid              : cred.user.uid,
+        country          : 'Pakistan',
         completedTaskIds : [],
         referralCount    : 0,
         referralEarned   : 0,
         referredUsers    : [],
-        usedReferralCode : referrerCode || null,
-        referredBy       : referrerUid  || null
+        usedReferralCode : null,
+        referredBy       : null
       });
 
-      // ── STEP 4: Write pending_referral (new user writes own doc — always allowed) ──
-      // The referrer will process this when they next open the app.
-      if (referrerUid) {
-        try {
-          await db.collection('pending_referrals').doc(cred.user.uid).set({
-            newUserId    : cred.user.uid,
-            newUserEmail : cred.user.email,
-            referrerId   : referrerUid,
-            referralCode : referrerCode,
-            coinsToAward : 100,
-            processed    : false,
-            createdAt    : firebase.firestore.FieldValue.serverTimestamp()
-          });
-          msg.textContent = '🎉 Account ban gaya! 500 welcome coins mile! Referrer ko bonus mil raha hai!';
-        } catch (prErr) {
-          console.error('Pending referral write error:', prErr);
-          msg.textContent = 'Account ban gaya! 500 welcome coins mile! 🎉';
-        }
-      } else {
-        msg.textContent = 'Account ban gaya! 500 welcome coins mile! 🎉';
-      }
+      msg.textContent = '🎉 Account ban gaya! 500 welcome coins mile! Profile mein ja ke promo code apply karo!';
       msg.className = 'form-message success';
       showToast('Khush Aamdeed! 🎉');
 
@@ -1294,6 +1247,159 @@
       }
     } catch (e) {
       console.error('processPendingReferrals error:', e);
+    }
+  }
+
+  // ===== APPLY PROMO / REFERRAL CODE FROM PROFILE =====
+  // Both parties instantly get 100 coins. Uses a Firestore transaction to prevent
+  // duplicate rewards. One account can only apply ONE code ever.
+  window.applyPromoCode = async function () {
+    const user = auth.currentUser;
+    if (!user) { notify('Pehle sign in karo', 'error'); return; }
+
+    const codeInput = (document.getElementById('promo-code-input').value || '').trim().toUpperCase();
+    const msg = document.getElementById('promo-message');
+    const btn = document.getElementById('apply-promo-btn');
+
+    if (!codeInput || codeInput.length < 4) {
+      msg.textContent = '⚠️ Promo code enter karo (4-8 characters).';
+      msg.className = 'form-message error'; return;
+    }
+
+    // Self-referral check (client-side fast path)
+    if (currentUserData.referralCode && currentUserData.referralCode === codeInput) {
+      msg.textContent = '❌ Aap apna khud ka code use nahi kar sakte!';
+      msg.className = 'form-message error'; return;
+    }
+
+    // Already used check (client-side fast path)
+    if (currentUserData.usedReferralCode) {
+      msg.textContent = `✅ Aap ne pehle se "${currentUserData.usedReferralCode}" code use kiya hai!`;
+      msg.className = 'form-message info'; return;
+    }
+
+    try {
+      btn.disabled = true; btn.textContent = '⏳ Verify ho raha hai...';
+      msg.textContent = 'Promo code check ho raha hai...'; msg.className = 'form-message info';
+
+      // ── STEP 1: Find referrer by referral code ──
+      const refSnap = await db.collection('users')
+        .where('referralCode', '==', codeInput).limit(1).get();
+
+      if (refSnap.empty) {
+        msg.textContent = '❌ Yeh promo/referral code exist nahi karta. Sahi code darj karein.';
+        msg.className = 'form-message error';
+        btn.disabled = false; btn.textContent = '🎁 Code Apply Karo (+100 Coins)'; return;
+      }
+
+      const referrerDoc  = refSnap.docs[0];
+      const referrerUid  = referrerDoc.id;
+
+      // Self-referral check (server data)
+      if (referrerUid === user.uid) {
+        msg.textContent = '❌ Aap apna khud ka code use nahi kar sakte!';
+        msg.className = 'form-message error';
+        btn.disabled = false; btn.textContent = '🎁 Code Apply Karo (+100 Coins)'; return;
+      }
+
+      msg.textContent = 'Coins credit ho rahi hain...'; msg.className = 'form-message info';
+
+      // ── STEP 2: Atomic transaction — reward both parties, mark code used ──
+      const currentUserRef = db.collection('users').doc(user.uid);
+      const referrerRef    = db.collection('users').doc(referrerUid);
+
+      await db.runTransaction(async tx => {
+        const [currentSnap, referrerSnap] = await Promise.all([
+          tx.get(currentUserRef),
+          tx.get(referrerRef)
+        ]);
+
+        if (!currentSnap.exists) throw new Error('USER_NOT_FOUND');
+        if (!referrerSnap.exists) throw new Error('REFERRER_NOT_FOUND');
+
+        const currentData  = currentSnap.data();
+        const referrerData = referrerSnap.data();
+
+        // Duplicate-abuse guard inside transaction
+        if (currentData.usedReferralCode) throw new Error('ALREADY_USED');
+        const alreadyRewarded = (referrerData.referredUsers || []).includes(user.uid);
+        if (alreadyRewarded) throw new Error('ALREADY_REWARDED');
+
+        // ✅ Reward current user (applier)
+        tx.update(currentUserRef, {
+          coins            : firebase.firestore.FieldValue.increment(100),
+          totalEarned      : firebase.firestore.FieldValue.increment(100),
+          usedReferralCode : codeInput,
+          referredBy       : referrerUid,
+          lastSeen         : firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        // ✅ Reward referrer (code owner)
+        tx.update(referrerRef, {
+          coins          : firebase.firestore.FieldValue.increment(100),
+          totalEarned    : firebase.firestore.FieldValue.increment(100),
+          referralCount  : firebase.firestore.FieldValue.increment(1),
+          referralEarned : firebase.firestore.FieldValue.increment(100),
+          referredUsers  : firebase.firestore.FieldValue.arrayUnion(user.uid)
+        });
+      });
+
+      // ── STEP 3: Save permanent referral record ──
+      try {
+        const referrerEmail = referrerDoc.data().email || '';
+        await db.collection('referral_records').add({
+          referrerId   : referrerUid,
+          referrerEmail: referrerEmail,
+          newUserId    : user.uid,
+          newUserEmail : user.email,
+          coinsAwarded : 100,
+          referralCode : codeInput,
+          appliedAt    : firebase.firestore.FieldValue.serverTimestamp(),
+          status       : 'completed'
+        });
+      } catch (recErr) { console.error('Record save error:', recErr); }
+
+      // ── STEP 4: Update UI instantly ──
+      msg.textContent = '🎉 Mubarak! +100 coins aapko aur referrer dono ko mile!';
+      msg.className = 'form-message success';
+      notify('🎉 Promo code apply hua! +100 coins mile!', 'success', 6000);
+      animateCoin();
+
+      // Show "already used" state in profile
+      document.getElementById('promo-input-section').classList.add('hidden');
+      const alreadyEl = document.getElementById('promo-already-used');
+      alreadyEl.classList.remove('hidden');
+      document.getElementById('promo-used-code').textContent = `Code: ${codeInput}`;
+
+    } catch (err) {
+      console.error('applyPromoCode error:', err.code || err.message);
+      if (err.message === 'ALREADY_USED') {
+        msg.textContent = '✅ Aap ne pehle hi ek promo code use kiya hua hai!';
+        msg.className = 'form-message info';
+      } else if (err.message === 'ALREADY_REWARDED') {
+        msg.textContent = '⚠️ Yeh code pehle hi is account ke liye use ho chuka hai.';
+        msg.className = 'form-message error';
+      } else {
+        msg.textContent = '❌ Error aaya. Internet check karo aur dobara try karo.';
+        msg.className = 'form-message error';
+      }
+      btn.disabled = false; btn.textContent = '🎁 Code Apply Karo (+100 Coins)';
+    }
+  };
+
+  // ===== REFRESH PROMO CODE UI STATE IN PROFILE =====
+  function refreshPromoCodeUI(userData) {
+    const inputSection  = document.getElementById('promo-input-section');
+    const alreadyUsedEl = document.getElementById('promo-already-used');
+    const usedCodeEl    = document.getElementById('promo-used-code');
+    if (!inputSection || !alreadyUsedEl) return;
+    if (userData && userData.usedReferralCode) {
+      inputSection.classList.add('hidden');
+      alreadyUsedEl.classList.remove('hidden');
+      if (usedCodeEl) usedCodeEl.textContent = `Code: ${userData.usedReferralCode}`;
+    } else {
+      inputSection.classList.remove('hidden');
+      alreadyUsedEl.classList.add('hidden');
     }
   }
 
@@ -1425,16 +1531,6 @@
     document.getElementById('withdraw-modal').addEventListener('click', function(e) {
       if (e.target === this) closeWithdrawModal();
     });
-
-    // ===== AUTO-FILL REFERRAL FROM URL =====
-    const urlParams = new URLSearchParams(window.location.search);
-    const urlRef = urlParams.get('ref');
-    if (urlRef) {
-      const rf = document.getElementById('ref-code-input');
-      if (rf) rf.value = urlRef.toUpperCase();
-      // Show signup form if ref is in URL
-      showSignup();
-    }
 
     // ===== NAV TABS =====
     document.querySelectorAll('.nav-item').forEach(item => {
