@@ -181,22 +181,38 @@
     <p class="app-subtitle">Ghar baithe kamao – Real Cash Rewards</p>
     <span class="pk-badge">🌙 Pakistani Edition</span>
   </div>
-  <div class="login-card">
-    <h2 class="form-title">Khush Aamdeed! 👋</h2>
-    <p class="form-subtitle">Sign in karein aur kamana shuru karein</p>
+
+  <!-- SIGN IN FORM -->
+  <div class="login-card" id="signin-card">
+    <h2 class="form-title">Sign In 🔐</h2>
+    <p class="form-subtitle">Apne account mein login karein</p>
     <label class="input-label">📧 Email Address</label>
-    <input type="email" id="email-input" class="input-field" placeholder="apka@email.com">
+    <input type="email" id="signin-email" class="input-field" placeholder="apka@email.com">
     <label class="input-label">🔒 Password</label>
-    <input type="password" id="password-input" class="input-field" placeholder="Password darj karein">
-    <!-- ✅ REFERRAL CODE FIELD (signup ke liye) -->
-    <div class="ref-input-wrap" id="ref-code-wrap" style="display:none;">
-      <span class="ref-optional-lbl">🎁 Kisi ne invite kiya? (Optional)</span>
-      <label class="input-label">🤝 Referral Code</label>
-      <input type="text" id="ref-code-input" class="input-field" placeholder="e.g. ABC123" maxlength="8" style="text-transform:uppercase;letter-spacing:2px;">
-    </div>
+    <input type="password" id="signin-pass" class="input-field" placeholder="Password darj karein">
     <button id="signin-btn" class="btn-primary">🔐 Sign In</button>
-    <button id="signup-btn" class="btn-secondary">✨ Naya Account Banao</button>
-    <div id="auth-message" class="form-message"></div>
+    <button type="button" onclick="showSignup()" class="btn-secondary" style="margin-top:4px;">✨ Naya Account Banao</button>
+    <div id="signin-message" class="form-message"></div>
+  </div>
+
+  <!-- SIGN UP FORM -->
+  <div class="login-card" id="signup-card" style="display:none;">
+    <h2 class="form-title">Account Banao ✨</h2>
+    <p class="form-subtitle">Free join karo aur kamana shuru karo!</p>
+    <label class="input-label">📧 Email Address</label>
+    <input type="email" id="signup-email" class="input-field" placeholder="apka@email.com">
+    <label class="input-label">🔒 Password (6+ characters)</label>
+    <input type="password" id="signup-pass" class="input-field" placeholder="Password banao">
+    <label class="input-label">🔒 Confirm Password</label>
+    <input type="password" id="signup-confirm" class="input-field" placeholder="Password dobara darj karein">
+    <div style="background:#f0f9f0;border-radius:10px;padding:10px 12px;margin-bottom:10px;border:1px solid #c8e6c9;">
+      <div style="font-size:12px;color:#2e7d32;font-weight:700;margin-bottom:4px;">🎁 Referral Code (Optional)</div>
+      <div style="font-size:11px;color:var(--text-secondary);margin-bottom:6px;">Kisi dost ka code? +100 bonus coins milenge!</div>
+      <input type="text" id="ref-code-input" class="input-field" placeholder="e.g. ABC123" maxlength="8" style="text-transform:uppercase;letter-spacing:2px;margin-bottom:0;height:44px;">
+    </div>
+    <button id="signup-btn" class="btn-primary" style="margin-top:6px;">✅ Account Banao</button>
+    <button type="button" onclick="showSignin()" class="btn-secondary" style="margin-top:4px;">← Wapas Sign In</button>
+    <div id="signup-message" class="form-message"></div>
   </div>
 </div>
 
@@ -439,7 +455,6 @@
     Bank: null
   };
 
-    // ── FIREBASE CONFIG ──
   const firebaseConfig = {
   apiKey: "AIzaSyDiw9Lkblug95sFXQIXQB4p6mWePdMvyWE",
   authDomain: "paw-pro-589ab.firebaseapp.com",
@@ -859,40 +874,62 @@
 
   async function loadWithdrawHistory(uid) {
     try {
+      // ✅ NO orderBy — avoids composite index requirement (failed-precondition fix)
+      // Sorting done in JS after fetch
       db.collection('withdraw_requests')
         .where('userId', '==', uid)
-        .orderBy('createdAt', 'desc')
         .limit(50)
         .onSnapshot(snap => {
           const cont = document.getElementById('withdraw-history');
           const badge = document.getElementById('w-count-badge');
           if (!cont) return;
+
           if (snap.empty) {
             cont.innerHTML = '<div style="text-align:center;padding:28px 16px;color:var(--text-secondary);"><div style="font-size:36px;margin-bottom:10px;">📭</div><div style="font-size:13px;">Abhi tak koi withdrawal nahi.</div></div>';
             if (badge) badge.textContent = '0';
             set('profile-withdrawals', '0'); return;
           }
+
+          // ✅ Collect all docs, sort by createdAt desc in JS
+          const docs = [];
+          snap.forEach(doc => docs.push({ id: doc.id, ...doc.data() }));
+          docs.sort((a, b) => {
+            const ta = a.createdAt?.toMillis ? a.createdAt.toMillis() : (a.createdAt?.seconds || 0) * 1000;
+            const tb = b.createdAt?.toMillis ? b.createdAt.toMillis() : (b.createdAt?.seconds || 0) * 1000;
+            return tb - ta; // newest first
+          });
+
           cont.innerHTML = '';
-          let count = 0;
-          snap.forEach(doc => {
-            count++;
-            const d = doc.data();
+          docs.forEach(d => {
             const div = document.createElement('div');
             div.innerHTML = buildWCard(d);
-            cont.appendChild(div.firstElementChild);
+            if (div.firstElementChild) cont.appendChild(div.firstElementChild);
           });
-          if (badge) badge.textContent = count;
-          set('profile-withdrawals', count);
-          if (!window.wHistInit) { window.wHistInit = true; } else {
+
+          if (badge) badge.textContent = docs.length;
+          set('profile-withdrawals', docs.length);
+
+          // ✅ Real-time status change notifications
+          if (!window.wHistInit) {
+            window.wHistInit = true;
+          } else {
             snap.docChanges().forEach(ch => {
               if (ch.type === 'modified') {
                 const d = ch.doc.data();
-                if (d.status === 'approved') notify(`✅ ${d.coins} coins ki withdrawal Completed!`, 'success', 6000);
-                else if (d.status === 'rejected') notify(`❌ Withdrawal reject hui${d.rejectionReason ? ': ' + d.rejectionReason : ''}`, 'error', 6000);
+                if (d.status === 'approved') {
+                  notify(`✅ ${d.coins} coins ki withdrawal Completed ho gayi!`, 'success', 7000);
+                  showToast('💰 Withdrawal Approved!', 'success', 5000);
+                } else if (d.status === 'rejected') {
+                  notify(`❌ Withdrawal reject hui${d.rejectionReason ? ': ' + d.rejectionReason : ''}`, 'error', 7000);
+                }
               }
             });
           }
-        }, err => { console.error('Withdraw history error:', err); });
+        }, err => {
+          console.error('Withdraw history error:', err);
+          const cont = document.getElementById('withdraw-history');
+          if (cont) cont.innerHTML = '<div style="text-align:center;padding:20px;color:#c62828;font-size:13px;">⚠️ History load nahi hui. Page refresh karein.</div>';
+        });
     } catch (e) { console.error(e); }
   }
 
@@ -1012,11 +1049,31 @@
   }
 
   // ===== AUTH - SIGN IN =====
+  function showSignin() {
+    document.getElementById('signin-card').style.display = 'block';
+    document.getElementById('signup-card').style.display = 'none';
+    document.getElementById('signin-message').textContent = '';
+  }
+
+  function showSignup() {
+    document.getElementById('signin-card').style.display = 'none';
+    document.getElementById('signup-card').style.display = 'block';
+    document.getElementById('signup-message').textContent = '';
+    // Auto-fill referral from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlRef = urlParams.get('ref');
+    if (urlRef) {
+      const rf = document.getElementById('ref-code-input');
+      if (rf && !rf.value) rf.value = urlRef.toUpperCase();
+    }
+  }
+
   async function handleSignIn(e) {
-    e.preventDefault();
-    const email = document.getElementById('email-input').value.trim();
-    const pass = document.getElementById('password-input').value;
-    const msg = document.getElementById('auth-message'), btn = document.getElementById('signin-btn');
+    if(e) e.preventDefault();
+    const email = document.getElementById('signin-email').value.trim();
+    const pass = document.getElementById('signin-pass').value;
+    const msg = document.getElementById('signin-message');
+    const btn = document.getElementById('signin-btn');
     if (!email || !pass) { msg.textContent = 'Email aur password enter karo'; msg.className = 'form-message error'; return; }
     try {
       btn.textContent = 'Sign in ho raha hai...'; btn.disabled = true;
@@ -1024,8 +1081,6 @@
       await auth.signInWithEmailAndPassword(email, pass);
       msg.textContent = 'Sign in hua!'; msg.className = 'form-message success';
       showToast('Khush Aamdeed! 👋');
-      // Hide referral field on login
-      document.getElementById('ref-code-wrap').style.display = 'none';
     } catch (err) {
       const errs = {
         'auth/user-not-found': '🔍 Account nahi mila. Naya account banao.',
@@ -1042,58 +1097,73 @@
 
   // ===== AUTH - SIGN UP WITH REFERRAL =====
   async function handleSignUp(e) {
-    e.preventDefault();
-    const email = document.getElementById('email-input').value.trim();
-    const pass = document.getElementById('password-input').value;
-    const refInput = document.getElementById('ref-code-input').value.trim().toUpperCase();
-    const msg = document.getElementById('auth-message'), btn = document.getElementById('signup-btn');
-    if (!email || pass.length < 6) {
-      msg.textContent = 'Sahih email aur 6+ characters ka password darj karo'; msg.className = 'form-message error'; return;
-    }
-    // Show referral field if hidden
-    const refWrap = document.getElementById('ref-code-wrap');
-    if (refWrap.style.display === 'none') {
-      refWrap.style.display = 'block';
-      msg.textContent = 'Referral code darj karein (optional) aur dobara click karein.'; msg.className = 'form-message info';
-      return;
-    }
+    if(e) e.preventDefault();
+    const email = document.getElementById('signup-email').value.trim();
+    const pass  = document.getElementById('signup-pass').value;
+    const conf  = document.getElementById('signup-confirm').value;
+    const refInput = (document.getElementById('ref-code-input').value || '').trim().toUpperCase();
+    const msg = document.getElementById('signup-message');
+    const btn = document.getElementById('signup-btn');
+
+    // ===== VALIDATION =====
+    if (!email) { msg.textContent = '📧 Email darj karein.'; msg.className = 'form-message error'; return; }
+    if (pass.length < 6) { msg.textContent = '🔒 Password kam se kam 6 characters ka hona chahiye.'; msg.className = 'form-message error'; return; }
+    if (pass !== conf) { msg.textContent = '❌ Passwords match nahi kar rahe. Dobara check karein.'; msg.className = 'form-message error'; return; }
+
     try {
       btn.textContent = 'Account ban raha hai...'; btn.disabled = true;
-      msg.textContent = 'Account ban raha hai...'; msg.className = 'form-message info';
+      msg.textContent = 'Tayaar ho raha hai...'; msg.className = 'form-message info';
 
-      // ✅ Verify referral code BEFORE creating account
+      // ===== STEP 1: Verify referral code first (if provided) =====
       let referrerUid = null;
-      if (refInput && refInput.length >= 4) {
-        const refSnap = await db.collection('users').where('referralCode', '==', refInput).limit(1).get();
-        if (refSnap.empty) {
-          msg.textContent = '❌ Referral code galat hai ya exist nahi karta.'; msg.className = 'form-message error';
-          btn.textContent = '✨ Naya Account Banao'; btn.disabled = false; return;
+      if (refInput.length >= 4) {
+        msg.textContent = 'Referral code check ho raha hai...'; msg.className = 'form-message info';
+        try {
+          const refSnap = await db.collection('users').where('referralCode', '==', refInput).limit(1).get();
+          if (refSnap.empty) {
+            msg.textContent = '❌ Referral code galat hai. Sahi code darj karein ya khali chhod dein.';
+            msg.className = 'form-message error';
+            btn.textContent = '✅ Account Banao'; btn.disabled = false; return;
+          }
+          referrerUid = refSnap.docs[0].id;
+        } catch (refCheckErr) {
+          console.error('Referral check error:', refCheckErr);
+          // Don't block signup if referral check fails due to network
         }
-        referrerUid = refSnap.docs[0].id;
       }
 
+      // ===== STEP 2: Create Firebase Auth account =====
+      msg.textContent = 'Account ban raha hai...'; msg.className = 'form-message info';
       const cred = await auth.createUserWithEmailAndPassword(email, pass);
       const newCode = genCode();
 
-      // ✅ Create new user doc
+      // ===== STEP 3: Save user document to Firestore =====
       await db.collection('users').doc(cred.user.uid).set({
-        email: cred.user.email, coins: 500, totalTasks: 0, totalEarned: 500,
-        referralCode: newCode, createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        uid: cred.user.uid, country: 'Pakistan', completedTaskIds: [],
-        referralCount: 0, referralEarned: 0,
+        email: cred.user.email,
+        coins: 500,
+        totalTasks: 0,
+        totalEarned: 500,
+        referralCode: newCode,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        uid: cred.user.uid,
+        country: 'Pakistan',
+        completedTaskIds: [],
+        referralCount: 0,
+        referralEarned: 0,
+        referredUsers: [],
         usedReferralCode: refInput || null,
         referredBy: referrerUid || null
       });
 
-      // ✅ If valid referral - reward referrer using transaction (no duplicates)
+      // ===== STEP 4: Reward referrer if valid code used =====
       if (referrerUid) {
         try {
           await db.runTransaction(async tx => {
             const refUserRef = db.collection('users').doc(referrerUid);
             const refUserDoc = await tx.get(refUserRef);
             if (!refUserDoc.exists) return;
-            // Prevent duplicate referral rewards
             const refData = refUserDoc.data();
+            // Anti-abuse: check if this new user already rewarded this referrer
             const alreadyRewarded = (refData.referredUsers || []).includes(cred.user.uid);
             if (alreadyRewarded) return;
             tx.update(refUserRef, {
@@ -1104,32 +1174,43 @@
               referredUsers: firebase.firestore.FieldValue.arrayUnion(cred.user.uid)
             });
           });
-          // Save referral record permanently
+          // Save permanent referral record
           await db.collection('referral_records').add({
-            referrerId: referrerUid, newUserId: cred.user.uid,
-            newUserEmail: cred.user.email, coinsAwarded: 100,
+            referrerId: referrerUid,
+            newUserId: cred.user.uid,
+            newUserEmail: cred.user.email,
+            coinsAwarded: 100,
             referralCode: refInput,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
           });
-          msg.textContent = '🎉 Account ban gaya! Referral bonus diya gaya! +500 coins mile!'; msg.className = 'form-message success';
-        } catch (refErr) { console.error('Referral error:', refErr); }
+          msg.textContent = '🎉 Account ban gaya! +500 welcome + 100 referral bonus coins mile!';
+        } catch (refErr) {
+          console.error('Referral reward error:', refErr);
+          msg.textContent = 'Account ban gaya! 500 welcome coins mile! 🎉';
+        }
       } else {
-        msg.textContent = 'Account ban gaya! 500 welcome coins mile! 🎉'; msg.className = 'form-message success';
+        msg.textContent = 'Account ban gaya! 500 welcome coins mile! 🎉';
       }
-      showToast('Khush Aamdeed! 500 bonus coins! 🎉');
+      msg.className = 'form-message success';
+      showToast('Khush Aamdeed! 🎉');
+
     } catch (err) {
+      console.error('Signup error:', err);
       const errs = {
-        'auth/email-already-in-use': '✉️ Email pehle se registered. Sign In karo.',
-        'auth/invalid-email': '📧 Email galat hai.',
-        'auth/weak-password': '🔒 Password kamzor. 6+ characters use karo.',
-        'auth/network-request-failed': '🌐 Internet check karo.'
+        'auth/email-already-in-use': '✉️ Yeh email pehle se registered hai. Sign In karein.',
+        'auth/invalid-email': '📧 Email address galat format mein hai.',
+        'auth/weak-password': '🔒 Password bahut kamzor hai. 6+ characters use karein.',
+        'auth/network-request-failed': '🌐 Internet connection check karein.',
+        'auth/operation-not-allowed': '⚠️ Account creation abhi disabled hai.',
+        'auth/too-many-requests': '🚫 Bahut zyada requests. Thodi der baad try karein.'
       };
-      msg.textContent = errs[err.code] || `Error: ${err.message}`; msg.className = 'form-message error';
-      btn.textContent = '✨ Naya Account Banao'; btn.disabled = false;
+      msg.textContent = errs[err.code] || `Error: ${err.message}`;
+      msg.className = 'form-message error';
+      btn.textContent = '✅ Account Banao'; btn.disabled = false;
     }
   }
 
-  async function claimDailyReward() {
+    async function claimDailyReward() {
     const user = auth.currentUser; if (!user) { showToast('Pehle sign in karo', 'error'); return; }
     const btn = document.getElementById('claim-daily'), txt = document.getElementById('daily-text');
     const msg = document.getElementById('daily-msg'), today = new Date().toISOString().slice(0, 10);
@@ -1156,16 +1237,33 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
+    // ===== AUTH BUTTONS =====
     document.getElementById('signin-btn').addEventListener('click', handleSignIn);
     document.getElementById('signup-btn').addEventListener('click', handleSignUp);
+
+    // Enter key support for sign in
+    document.getElementById('signin-pass').addEventListener('keydown', e => {
+      if (e.key === 'Enter') handleSignIn(e);
+    });
+    document.getElementById('signup-confirm').addEventListener('keydown', e => {
+      if (e.key === 'Enter') handleSignUp(e);
+    });
+
+    // ===== APP BUTTONS =====
     document.getElementById('claim-daily').addEventListener('click', claimDailyReward);
     document.getElementById('spin-btn').addEventListener('click', handleSpin);
-    document.getElementById('logout').addEventListener('click', () => { auth.signOut(); showToast('Sign out ho gaye'); });
+    document.getElementById('logout').addEventListener('click', () => {
+      auth.signOut();
+      showSignin();
+      showToast('Sign out ho gaye');
+    });
 
+    // ===== REFERRAL SHARING =====
     document.getElementById('copy-ref').addEventListener('click', async () => {
       const code = document.getElementById('ref-code').textContent;
       const url = `${location.origin}${location.pathname}?ref=${code}`;
-      try { await navigator.clipboard.writeText(url); showToast('Referral link copy ho gaya! 📋'); } catch (_) { showToast('Copy nahi hua', 'error'); }
+      try { await navigator.clipboard.writeText(url); showToast('Referral link copy ho gaya! 📋'); }
+      catch (_) { showToast('Copy nahi hua', 'error'); }
     });
     document.getElementById('share-wa').addEventListener('click', () => {
       const code = document.getElementById('ref-code').textContent;
@@ -1176,24 +1274,22 @@
       window.open(`https://t.me/share/url?url=${encodeURIComponent(location.origin + location.pathname + '?ref=' + code)}&text=${encodeURIComponent('🇵🇰 Mreward PRO Pakistan join karo!')}`, '_blank');
     });
 
-    // Close modal on background click
+    // ===== WITHDRAW MODAL CLOSE ON BG CLICK =====
     document.getElementById('withdraw-modal').addEventListener('click', function(e) {
       if (e.target === this) closeWithdrawModal();
     });
 
-    // Handle referral code from URL
+    // ===== AUTO-FILL REFERRAL FROM URL =====
     const urlParams = new URLSearchParams(window.location.search);
     const urlRef = urlParams.get('ref');
     if (urlRef) {
-      const refInput = document.getElementById('ref-code-input');
-      if (refInput) { refInput.value = urlRef.toUpperCase(); }
+      const rf = document.getElementById('ref-code-input');
+      if (rf) rf.value = urlRef.toUpperCase();
+      // Show signup form if ref is in URL
+      showSignup();
     }
 
-    // Toggle referral field: show on signup, hide on signin
-    document.getElementById('signup-btn').addEventListener('mouseenter', () => {
-      document.getElementById('ref-code-wrap').style.display = 'block';
-    }, { once: false });
-
+    // ===== NAV TABS =====
     document.querySelectorAll('.nav-item').forEach(item => {
       item.addEventListener('click', () => switchTab(item.dataset.tab));
     });
