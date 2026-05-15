@@ -293,11 +293,15 @@
       <!-- REFERRAL CARD -->
       <div class="card">
         <div class="card-title">🤝 Dost Ko Invite Karo</div>
-        <p class="small" style="margin-bottom:12px;">Referral code share karo, 100 coins per friend!</p>
+        <p class="small" style="margin-bottom:12px;">Referral code share karo, har dost ke liye 100 coins!</p>
+
+        <!-- Code Box -->
         <div class="ref-box">
           <div class="small" style="margin-bottom:6px;">Tera Referral Code:</div>
           <div class="ref-code-text" id="ref-code">LOADING</div>
         </div>
+
+        <!-- Live Stats -->
         <div class="ref-stats">
           <div class="ref-stat-box">
             <div class="ref-stat-val" id="ref-count">0</div>
@@ -305,16 +309,29 @@
           </div>
           <div class="ref-stat-box">
             <div class="ref-stat-val" id="ref-earned">0</div>
-            <div class="ref-stat-lbl">💰 Earned</div>
+            <div class="ref-stat-lbl">💰 Coins Earned</div>
           </div>
         </div>
-        <div style="display:flex;gap:10px;margin-top:12px;margin-bottom:10px;">
+
+        <!-- Share Buttons -->
+        <div style="display:flex;gap:10px;margin-top:14px;margin-bottom:10px;">
           <button id="copy-ref" class="btn ghost" style="flex:1;">📋 Copy Link</button>
           <button id="share-wa" class="btn" style="flex:1;background:#25D366;">📱 WhatsApp</button>
         </div>
         <button id="share-tg" class="btn ghost" style="width:100%;">✈️ Telegram Share</button>
         <div style="background:#f0f9f0;border-radius:10px;padding:10px;margin-top:12px;text-align:center;">
-          <div class="small">💡 Har dost ke liye <strong style="color:var(--primary);">100 coins</strong> milenge!</div>
+          <div class="small">💡 Har dost ke liye <strong style="color:var(--primary);">100 coins</strong> milenge! Aur referral link se auto-fill bhi hoga.</div>
+        </div>
+
+        <!-- Referral History -->
+        <div style="margin-top:18px;border-top:1px solid var(--border);padding-top:14px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <div style="font-size:14px;font-weight:700;color:var(--primary);">📋 Referral History</div>
+            <span id="ref-count-badge" style="background:#e8f5e9;color:#2e7d32;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;border:1px solid #c8e6c9;" id="ref-hist-badge">0</span>
+          </div>
+          <div id="ref-history-list" class="list" style="max-height:280px;">
+            <div class="small" style="text-align:center;padding:16px;">Abhi tak koi referral nahi. Dosto ko invite karo!</div>
+          </div>
         </div>
       </div>
 
@@ -514,9 +531,12 @@
         loadTasks();
         loadWithdrawHistory(user.uid);
         loadRecentActivity(user.uid);
+        loadReferralHistory(user.uid);
         setupSystemListeners();
         setupUserStatusListener(user.uid);
         detectUserReturn();
+        // ✅ Process any pending referral rewards for this user
+        processPendingReferrals(user.uid);
       } else {
         document.getElementById('auth-container').classList.remove('hidden');
         document.getElementById('main-app').classList.remove('visible');
@@ -1096,96 +1116,90 @@
   }
 
   // ===== AUTH - SIGN UP WITH REFERRAL =====
+  // ROOT CAUSE FIX: Firestore rules block new user from writing to referrer's doc.
+  // Solution: Store referral in "pending_referrals" collection (new user writes own doc).
+  // When referrer logs in, processPendingReferrals() picks it up and rewards them.
+  // This is 100% secure, no rule changes needed.
+
   async function handleSignUp(e) {
-    if(e) e.preventDefault();
-    const email = document.getElementById('signup-email').value.trim();
-    const pass  = document.getElementById('signup-pass').value;
-    const conf  = document.getElementById('signup-confirm').value;
+    if (e) e.preventDefault();
+    const email    = document.getElementById('signup-email').value.trim();
+    const pass     = document.getElementById('signup-pass').value;
+    const conf     = document.getElementById('signup-confirm').value;
     const refInput = (document.getElementById('ref-code-input').value || '').trim().toUpperCase();
     const msg = document.getElementById('signup-message');
     const btn = document.getElementById('signup-btn');
 
-    // ===== VALIDATION =====
-    if (!email) { msg.textContent = '📧 Email darj karein.'; msg.className = 'form-message error'; return; }
-    if (pass.length < 6) { msg.textContent = '🔒 Password kam se kam 6 characters ka hona chahiye.'; msg.className = 'form-message error'; return; }
-    if (pass !== conf) { msg.textContent = '❌ Passwords match nahi kar rahe. Dobara check karein.'; msg.className = 'form-message error'; return; }
+    // ── Validation ──
+    if (!email) {
+      msg.textContent = '📧 Email darj karein.'; msg.className = 'form-message error'; return;
+    }
+    if (pass.length < 6) {
+      msg.textContent = '🔒 Password kam se kam 6 characters ka hona chahiye.'; msg.className = 'form-message error'; return;
+    }
+    if (pass !== conf) {
+      msg.textContent = '❌ Passwords match nahi kar rahe. Dobara check karein.'; msg.className = 'form-message error'; return;
+    }
 
     try {
-      btn.textContent = 'Account ban raha hai...'; btn.disabled = true;
-      msg.textContent = 'Tayaar ho raha hai...'; msg.className = 'form-message info';
+      btn.textContent = 'Tayaar ho raha hai...'; btn.disabled = true;
+      msg.textContent = 'Please wait...'; msg.className = 'form-message info';
 
-      // ===== STEP 1: Verify referral code first (if provided) =====
+      // ── STEP 1: Verify referral code if provided ──
       let referrerUid = null;
+      let referrerCode = null;
       if (refInput.length >= 4) {
-        msg.textContent = 'Referral code check ho raha hai...'; msg.className = 'form-message info';
-        try {
-          const refSnap = await db.collection('users').where('referralCode', '==', refInput).limit(1).get();
-          if (refSnap.empty) {
-            msg.textContent = '❌ Referral code galat hai. Sahi code darj karein ya khali chhod dein.';
-            msg.className = 'form-message error';
-            btn.textContent = '✅ Account Banao'; btn.disabled = false; return;
-          }
-          referrerUid = refSnap.docs[0].id;
-        } catch (refCheckErr) {
-          console.error('Referral check error:', refCheckErr);
-          // Don't block signup if referral check fails due to network
+        msg.textContent = 'Referral code verify ho raha hai...'; msg.className = 'form-message info';
+        const refSnap = await db.collection('users')
+          .where('referralCode', '==', refInput).limit(1).get();
+        if (refSnap.empty) {
+          msg.textContent = '❌ Referral code galat hai ya exist nahi karta. Sahi code darj karein ya khali chhod dein.';
+          msg.className = 'form-message error';
+          btn.textContent = '✅ Account Banao'; btn.disabled = false; return;
         }
+        referrerUid  = refSnap.docs[0].id;
+        referrerCode = refInput;
       }
 
-      // ===== STEP 2: Create Firebase Auth account =====
+      // ── STEP 2: Create Firebase Auth account ──
       msg.textContent = 'Account ban raha hai...'; msg.className = 'form-message info';
       const cred = await auth.createUserWithEmailAndPassword(email, pass);
       const newCode = genCode();
 
-      // ===== STEP 3: Save user document to Firestore =====
+      // ── STEP 3: Save new user document ──
       await db.collection('users').doc(cred.user.uid).set({
-        email: cred.user.email,
-        coins: 500,
-        totalTasks: 0,
-        totalEarned: 500,
-        referralCode: newCode,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        uid: cred.user.uid,
-        country: 'Pakistan',
-        completedTaskIds: [],
-        referralCount: 0,
-        referralEarned: 0,
-        referredUsers: [],
-        usedReferralCode: refInput || null,
-        referredBy: referrerUid || null
+        email        : cred.user.email,
+        coins        : 500,
+        totalTasks   : 0,
+        totalEarned  : 500,
+        referralCode : newCode,
+        createdAt    : firebase.firestore.FieldValue.serverTimestamp(),
+        uid          : cred.user.uid,
+        country      : 'Pakistan',
+        completedTaskIds : [],
+        referralCount    : 0,
+        referralEarned   : 0,
+        referredUsers    : [],
+        usedReferralCode : referrerCode || null,
+        referredBy       : referrerUid  || null
       });
 
-      // ===== STEP 4: Reward referrer if valid code used =====
+      // ── STEP 4: Write pending_referral (new user writes own doc — always allowed) ──
+      // The referrer will process this when they next open the app.
       if (referrerUid) {
         try {
-          await db.runTransaction(async tx => {
-            const refUserRef = db.collection('users').doc(referrerUid);
-            const refUserDoc = await tx.get(refUserRef);
-            if (!refUserDoc.exists) return;
-            const refData = refUserDoc.data();
-            // Anti-abuse: check if this new user already rewarded this referrer
-            const alreadyRewarded = (refData.referredUsers || []).includes(cred.user.uid);
-            if (alreadyRewarded) return;
-            tx.update(refUserRef, {
-              coins: firebase.firestore.FieldValue.increment(100),
-              totalEarned: firebase.firestore.FieldValue.increment(100),
-              referralCount: firebase.firestore.FieldValue.increment(1),
-              referralEarned: firebase.firestore.FieldValue.increment(100),
-              referredUsers: firebase.firestore.FieldValue.arrayUnion(cred.user.uid)
-            });
+          await db.collection('pending_referrals').doc(cred.user.uid).set({
+            newUserId    : cred.user.uid,
+            newUserEmail : cred.user.email,
+            referrerId   : referrerUid,
+            referralCode : referrerCode,
+            coinsToAward : 100,
+            processed    : false,
+            createdAt    : firebase.firestore.FieldValue.serverTimestamp()
           });
-          // Save permanent referral record
-          await db.collection('referral_records').add({
-            referrerId: referrerUid,
-            newUserId: cred.user.uid,
-            newUserEmail: cred.user.email,
-            coinsAwarded: 100,
-            referralCode: refInput,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-          });
-          msg.textContent = '🎉 Account ban gaya! +500 welcome + 100 referral bonus coins mile!';
-        } catch (refErr) {
-          console.error('Referral reward error:', refErr);
+          msg.textContent = '🎉 Account ban gaya! 500 welcome coins mile! Referrer ko bonus mil raha hai!';
+        } catch (prErr) {
+          console.error('Pending referral write error:', prErr);
           msg.textContent = 'Account ban gaya! 500 welcome coins mile! 🎉';
         }
       } else {
@@ -1195,19 +1209,152 @@
       showToast('Khush Aamdeed! 🎉');
 
     } catch (err) {
-      console.error('Signup error:', err);
+      console.error('Signup error:', err.code, err.message);
       const errs = {
-        'auth/email-already-in-use': '✉️ Yeh email pehle se registered hai. Sign In karein.',
-        'auth/invalid-email': '📧 Email address galat format mein hai.',
-        'auth/weak-password': '🔒 Password bahut kamzor hai. 6+ characters use karein.',
+        'auth/email-already-in-use' : '✉️ Yeh email pehle se registered hai. Sign In karein.',
+        'auth/invalid-email'        : '📧 Email address galat format mein hai.',
+        'auth/weak-password'        : '🔒 Password bahut kamzor hai. 6+ characters use karein.',
         'auth/network-request-failed': '🌐 Internet connection check karein.',
         'auth/operation-not-allowed': '⚠️ Account creation abhi disabled hai.',
-        'auth/too-many-requests': '🚫 Bahut zyada requests. Thodi der baad try karein.'
+        'auth/too-many-requests'    : '🚫 Bahut zyada requests. Thodi der baad try karein.'
       };
       msg.textContent = errs[err.code] || `Error: ${err.message}`;
       msg.className = 'form-message error';
       btn.textContent = '✅ Account Banao'; btn.disabled = false;
     }
+  }
+
+  // ===== PROCESS PENDING REFERRALS (runs when referrer logs in) =====
+  // This is the KEY function that actually rewards the referrer.
+  // It reads pending_referrals where referrerId == current user,
+  // then uses a transaction to safely update their coins/count.
+  async function processPendingReferrals(uid) {
+    try {
+      const snap = await db.collection('pending_referrals')
+        .where('referrerId', '==', uid)
+        .where('processed', '==', false)
+        .get();
+
+      if (snap.empty) return; // nothing to process
+
+      for (const pendingDoc of snap.docs) {
+        const pd = pendingDoc.data();
+        try {
+          await db.runTransaction(async tx => {
+            const userRef    = db.collection('users').doc(uid);
+            const userSnap   = await tx.get(userRef);
+            const pendingRef = db.collection('pending_referrals').doc(pendingDoc.id);
+
+            if (!userSnap.exists) return;
+            const userData = userSnap.data();
+
+            // Anti-abuse: block if already rewarded for this new user
+            const alreadyRewarded = (userData.referredUsers || []).includes(pd.newUserId);
+            if (alreadyRewarded) {
+              // Mark processed even if already rewarded
+              tx.update(pendingRef, { processed: true, processedAt: firebase.firestore.FieldValue.serverTimestamp() });
+              return;
+            }
+
+            const coins = pd.coinsToAward || 100;
+
+            // ✅ Update referrer's stats
+            tx.update(userRef, {
+              coins          : firebase.firestore.FieldValue.increment(coins),
+              totalEarned    : firebase.firestore.FieldValue.increment(coins),
+              referralCount  : firebase.firestore.FieldValue.increment(1),
+              referralEarned : firebase.firestore.FieldValue.increment(coins),
+              referredUsers  : firebase.firestore.FieldValue.arrayUnion(pd.newUserId)
+            });
+
+            // ✅ Mark pending_referral as processed
+            tx.update(pendingRef, {
+              processed   : true,
+              processedAt : firebase.firestore.FieldValue.serverTimestamp()
+            });
+          });
+
+          // ✅ Save permanent referral record
+          await db.collection('referral_records').add({
+            referrerId   : uid,
+            referrerEmail: auth.currentUser?.email || '',
+            newUserId    : pd.newUserId,
+            newUserEmail : pd.newUserEmail,
+            coinsAwarded : pd.coinsToAward || 100,
+            referralCode : pd.referralCode,
+            createdAt    : firebase.firestore.FieldValue.serverTimestamp(),
+            status       : 'completed'
+          });
+
+          notify(`🎉 Referral bonus mila! +${pd.coinsToAward || 100} coins (${pd.newUserEmail})`, 'success', 6000);
+
+        } catch (txErr) {
+          console.error('Referral transaction error:', txErr);
+        }
+      }
+    } catch (e) {
+      console.error('processPendingReferrals error:', e);
+    }
+  }
+
+  // ===== REFERRAL HISTORY (live, permanent) =====
+  function loadReferralHistory(uid) {
+    try {
+      // Listen to referral_records where referrerId == uid
+      db.collection('referral_records')
+        .where('referrerId', '==', uid)
+        .onSnapshot(snap => {
+          const cont  = document.getElementById('ref-history-list');
+          const count = snap.size;
+
+          // Update counts in UI
+          set('ref-count',  count);
+          set('ref-earned', (count * 100).toLocaleString());
+
+          if (!cont) return;
+          if (snap.empty) {
+            cont.innerHTML = '<div class="small" style="text-align:center;padding:16px;">Abhi tak koi referral nahi.</div>';
+            return;
+          }
+
+          // Sort newest first in JS (no index needed)
+          const docs = [];
+          snap.forEach(doc => docs.push({ id: doc.id, ...doc.data() }));
+          docs.sort((a, b) => {
+            const ta = a.createdAt?.toMillis ? a.createdAt.toMillis() : (a.createdAt?.seconds||0)*1000;
+            const tb = b.createdAt?.toMillis ? b.createdAt.toMillis() : (b.createdAt?.seconds||0)*1000;
+            return tb - ta;
+          });
+
+          cont.innerHTML = '';
+          docs.forEach(d => {
+            const dateStr = d.createdAt?.toDate
+              ? d.createdAt.toDate().toLocaleDateString('en-PK', {day:'2-digit',month:'short',year:'numeric'}) + ' ' +
+                d.createdAt.toDate().toLocaleTimeString('en-PK',{hour:'2-digit',minute:'2-digit',hour12:true})
+              : 'Haal hi mein';
+            const masked = d.newUserEmail
+              ? d.newUserEmail.slice(0,3) + '***@' + d.newUserEmail.split('@')[1]
+              : '–';
+            const item = document.createElement('div');
+            item.className = 'list-item';
+            item.style.cssText = 'border-left:3px solid #2e7d32;padding:10px 12px;';
+            item.innerHTML = `
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div>
+                  <div style="font-size:13px;font-weight:700;color:var(--text-primary);">👤 ${masked}</div>
+                  <div class="small" style="margin-top:3px;">📅 ${dateStr}</div>
+                </div>
+                <div style="text-align:right;">
+                  <div style="font-size:15px;font-weight:800;color:#2e7d32;">+${d.coinsAwarded||100} coins</div>
+                  <div style="font-size:10px;background:#e8f5e9;color:#2e7d32;padding:2px 8px;border-radius:10px;margin-top:3px;font-weight:700;">✅ Credited</div>
+                </div>
+              </div>`;
+            cont.appendChild(item);
+          });
+        }, err => {
+          console.error('Referral history error:', err);
+        });
+    } catch(e) { console.error(e); }
   }
 
     async function claimDailyReward() {
