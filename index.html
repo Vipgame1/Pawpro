@@ -1305,14 +1305,14 @@
       msg.textContent = 'Coins credit ho rahi hain...'; msg.className = 'form-message info';
 
       // ── STEP 2: Atomic transaction — reward both parties, mark code used ──
+      // NOTE: Sequential reads are required inside Firestore transactions (no Promise.all)
       const currentUserRef = db.collection('users').doc(user.uid);
       const referrerRef    = db.collection('users').doc(referrerUid);
 
       await db.runTransaction(async tx => {
-        const [currentSnap, referrerSnap] = await Promise.all([
-          tx.get(currentUserRef),
-          tx.get(referrerRef)
-        ]);
+        // Sequential reads (required by Firestore transaction protocol)
+        const currentSnap = await tx.get(currentUserRef);
+        const referrerSnap = await tx.get(referrerRef);
 
         if (!currentSnap.exists) throw new Error('USER_NOT_FOUND');
         if (!referrerSnap.exists) throw new Error('REFERRER_NOT_FOUND');
@@ -1325,7 +1325,7 @@
         const alreadyRewarded = (referrerData.referredUsers || []).includes(user.uid);
         if (alreadyRewarded) throw new Error('ALREADY_REWARDED');
 
-        // ✅ Reward current user (applier)
+        // ✅ Reward current user (applier) — own document, always allowed
         tx.update(currentUserRef, {
           coins            : firebase.firestore.FieldValue.increment(100),
           totalEarned      : firebase.firestore.FieldValue.increment(100),
@@ -1334,7 +1334,7 @@
           lastSeen         : firebase.firestore.FieldValue.serverTimestamp()
         });
 
-        // ✅ Reward referrer (code owner)
+        // ✅ Reward referrer (code owner) — cross-user update, allowed by rules
         tx.update(referrerRef, {
           coins          : firebase.firestore.FieldValue.increment(100),
           totalEarned    : firebase.firestore.FieldValue.increment(100),
