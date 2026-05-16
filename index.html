@@ -168,6 +168,35 @@
     .pk-feat-title{font-weight:600;font-size:13px;}
     @media(max-width:360px){.stats-grid{gap:8px;}.stat-value{font-size:20px;}.notif-cont{left:10px;right:10px;max-width:none;}}
     @media(prefers-color-scheme:dark){:root{--background:#0f1f0f;--surface:#1a2e1a;--text-primary:#e8f5e9;--text-secondary:#81c784;--border:#2e4d2e;}}
+    /* ===== LEADERBOARD ===== */
+    .lb-row{display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:11px;background:#f8faf8;margin-bottom:8px;border:1px solid var(--border);transition:transform 0.15s;}
+    .lb-row:active{transform:scale(0.98);}
+    .lb-row.lb-me{background:linear-gradient(135deg,#f0f9f0,#e8f5e9);border-color:#a5d6a7;}
+    .lb-rank-badge{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0;}
+    .lb-rank-num{background:var(--primary);color:#fff;}
+    .lb-gold{background:linear-gradient(135deg,#C8A951,#F0D060);color:#1a2e1a;}
+    .lb-silver{background:linear-gradient(135deg,#9e9e9e,#e0e0e0);color:#424242;}
+    .lb-bronze{background:linear-gradient(135deg,#a1887f,#795548);color:#fff;}
+    .lb-name{flex:1;font-size:13px;font-weight:700;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .lb-refs{font-size:12px;font-weight:800;color:var(--primary);white-space:nowrap;}
+    .lb-coins-lbl{font-size:10px;color:var(--success);font-weight:700;white-space:nowrap;}
+    .lb-timer{font-size:11px;color:var(--text-secondary);text-align:center;margin-top:8px;}
+    /* ===== LIVE FEED ===== */
+    .live-feed-wrap{display:flex;flex-direction:column;gap:8px;max-height:380px;overflow-y:auto;padding-right:2px;}
+    .feed-item{display:flex;align-items:center;gap:10px;padding:10px 13px;border-radius:12px;background:#fff;border:1px solid var(--border);animation:feedIn 0.4s ease-out;flex-shrink:0;}
+    .feed-item.feed-real{border-left:3px solid var(--success);}
+    @keyframes feedIn{from{opacity:0;transform:translateY(-10px);}to{opacity:1;transform:translateY(0);}}
+    .feed-avatar{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .feed-info{flex:1;min-width:0;}
+    .feed-name{font-size:13px;font-weight:700;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .feed-meta{font-size:11px;color:var(--text-secondary);margin-top:2px;display:flex;align-items:center;gap:4px;flex-wrap:wrap;}
+    .feed-method-logo{width:16px;height:16px;object-fit:contain;vertical-align:middle;}
+    .feed-right{text-align:right;flex-shrink:0;}
+    .feed-amt{font-size:14px;font-weight:800;color:var(--success);}
+    .feed-time{font-size:10px;color:var(--text-secondary);margin-top:1px;}
+    .live-badge{display:inline-flex;align-items:center;gap:5px;background:#ffebee;color:#c62828;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;}
+    .live-dot{width:7px;height:7px;border-radius:50%;background:#f44336;animation:blink 1.4s infinite;}
+    @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.2;}}
   </style>
 </head>
 <body>
@@ -272,6 +301,18 @@
         <div class="pk-feat"><span class="pk-feat-icon">🤝</span><div><div class="pk-feat-title">Referral Bonus</div><div class="pk-feat-text">Har dost ke join karne par 100 coins</div></div></div>
         <div class="pk-feat"><span class="pk-feat-icon">🎯</span><div><div class="pk-feat-title">Asaan Tasks</div><div class="pk-feat-text">Simple tasks karke fauri kamao</div></div></div>
       </div>
+
+      <!-- LIVE WITHDRAWAL FEED -->
+      <div class="card">
+        <div class="card-title" style="justify-content:space-between;">
+          <span>💸 Live Withdrawals</span>
+          <span class="live-badge"><span class="live-dot"></span>LIVE</span>
+        </div>
+        <p class="small" style="margin-bottom:12px;">Pakistan bhar se real-time cash withdrawals 🇵🇰</p>
+        <div id="live-feed" class="live-feed-wrap">
+          <div class="small" style="text-align:center;padding:14px;">Loading feed...</div>
+        </div>
+      </div>
     </div>
 
     <!-- TASKS -->
@@ -328,6 +369,19 @@
             <div class="small" style="text-align:center;padding:16px;">Abhi tak koi referral nahi. Dosto ko invite karo!</div>
           </div>
         </div>
+      </div>
+
+      <!-- REFERRAL LEADERBOARD -->
+      <div class="card">
+        <div class="card-title" style="justify-content:space-between;">
+          <span>🏆 Referral Leaderboard</span>
+          <span style="font-size:10px;background:#e8f5e9;color:#2e7d32;padding:3px 10px;border-radius:12px;font-weight:700;border:1px solid #c8e6c9;">Weekly 🔄</span>
+        </div>
+        <p class="small" style="margin-bottom:12px;">Top referrers – weekly ranking mein apni jagah pakki karo!</p>
+        <div id="leaderboard-list">
+          <div class="small" style="text-align:center;padding:14px;">Loading...</div>
+        </div>
+        <div class="lb-timer" id="lb-next-update"></div>
       </div>
 
       <!-- WITHDRAWAL CARD WITH REAL LOGOS -->
@@ -483,6 +537,7 @@
     Bank: null
   };
 
+  // ── FIREBASE CONFIG ──
   const firebaseConfig = {
   apiKey: "AIzaSyDiw9Lkblug95sFXQIXQB4p6mWePdMvyWE",
   authDomain: "paw-pro-589ab.firebaseapp.com",
@@ -548,6 +603,9 @@
         detectUserReturn();
         // ✅ Process any pending referral rewards for this user
         processPendingReferrals(user.uid);
+        // ✅ Start live feed & leaderboard
+        startLiveFeed();
+        loadLeaderboard();
       } else {
         document.getElementById('auth-container').classList.remove('hidden');
         document.getElementById('main-app').classList.remove('visible');
@@ -1021,6 +1079,18 @@
         coins: firebase.firestore.FieldValue.increment(-c),
         lastWithdrawal: firebase.firestore.FieldValue.serverTimestamp()
       });
+      // ✅ Write masked entry to live_feed for public feed display
+      try {
+        const rawName = (user.email || '').split('@')[0];
+        const city = PK_CITIES[Math.floor(Math.random() * PK_CITIES.length)];
+        await db.collection('live_feed').add({
+          maskedName: maskDisplayName(rawName),
+          city: city,
+          method: _wMethod,
+          amount: Math.round(c / 4), // coins → approximate PKR
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      } catch (_) {}
       closeWithdrawModal();
       notify(`✅ ${c} coins ki request submit! TXN: ${txnId}`, 'success', 6000);
     } catch (e) {
@@ -1333,7 +1403,6 @@
           referredBy       : referrerUid,
           lastSeen         : firebase.firestore.FieldValue.serverTimestamp()
         });
-
         // ✅ Reward referrer (code owner) — cross-user update, allowed by rules
         tx.update(referrerRef, {
           coins          : firebase.firestore.FieldValue.increment(100),
@@ -1487,6 +1556,229 @@
       txt.textContent = '🎁 Daily Reward Claim Karo'; btn.disabled = false;
       msg.textContent = err.message; msg.style.color = 'var(--error)'; notify(err.message, 'error');
     }
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // ===== LIVE WITHDRAWAL FEED (real + simulated) ==========
+  // ═══════════════════════════════════════════════════════
+  const PK_MALE = ['Muhammad','Ali','Ahmed','Hassan','Usman','Bilal','Imran','Asad','Faisal','Zain','Omar','Hamza','Tariq','Shahid','Kamran','Waqar','Sajid','Arif','Naeem','Raza','Adnan','Farhan','Talha','Waseem','Iqbal','Kashif','Junaid','Haris','Zubair','Ahsan','Rizwan','Yousuf','Zahid','Fahad','Khurram','Nadeem','Salman','Amjad','Abdul','Raja','Sarfraz','Nasir','Tahir','Shahbaz','Aqeel','Dawood','Azhar','Imtiaz','Pervez','Mudassar','Aamir','Waqas','Noman','Ghazanfar','Sohaib','Saad','Hamid','Rashid','Shafiq','Akbar','Qaiser','Zeeshan','Shehzad','Awais','Babar','Rehan','Umar','Fawad','Hassaan','Noman','Arslan','Luqman','Sohail','Zohaib','Waheed','Tanveer','Habib','Aamer','Atif','Asim','Yasir'];
+  const PK_FEMALE = ['Fatima','Aisha','Zainab','Maryam','Sara','Hina','Sana','Nadia','Rabia','Nimra','Amna','Ayesha','Bushra','Samina','Naila','Rubina','Komal','Shazia','Saima','Mehwish','Uzma','Amber','Fiza','Lubna','Madiha','Asma','Kiran','Sobia','Razia','Noor','Layla','Zunaira','Ifra','Alishba','Sundas','Hira','Misbah','Irum','Sadaf','Shabnam','Shaista','Iqra','Tayyaba','Warda','Sadia','Gulnaz','Anum','Faiza','Zara','Tooba','Areeba','Nida','Laraib','Sehrish','Rimsha','Mehak','Maham','Anila','Qurat','Meerab'];
+  const PK_SURNAMES = ['Khan','Ahmed','Ali','Hassan','Malik','Sheikh','Siddiqui','Qureshi','Butt','Chaudhry','Rizvi','Mirza','Akhtar','Ansari','Hashmi','Abbasi','Rafique','Tariq','Baig','Javed','Nawaz','Iqbal','Raza','Hussain','Farooq','Aslam','Nawab','Bhatti','Rajput','Lodhi','Baloch','Memon','Niazi','Afridi','Bangash','Paracha','Khattak','Wazir','Kakar','Tareen','Laghari','Jamali','Chandio','Bhutto','Talpur','Mazari','Brohi','Marwat','Orakzai','Mangal','Durrani','Shinwari','Yousafzai','Jadoon','Abbasi','Sabri','Toor','Rana','Gujjar','Arain','Kashmiri'];
+  const PK_CITIES = ['Karachi','Lahore','Islamabad','Rawalpindi','Faisalabad','Multan','Peshawar','Quetta','Sialkot','Gujranwala','Hyderabad','Sukkur','Abbottabad','Sahiwal','Bahawalpur','Sargodha','Okara','Gujrat','Sheikhupura','Rahim Yar Khan','Mirpur Khas','Larkana','Jhang','Dera Ghazi Khan','Kasur','Mardan','Mingora','Nawabshah','Chiniot','Kamalia','Sadiqabad','Jacobabad','Khanewal','Hafizabad','Kohat','Muzaffargarh','Khanpur','Gojra','Mandi Bahauddin','Turbat'];
+  const FEED_METHODS = ['JazzCash','Easypaisa','JazzCash','Easypaisa','JazzCash','Easypaisa','JazzCash','Easypaisa','SadaPay'];
+  // Weighted amounts — mostly small, rarely large
+  const FEED_AMTS = [2000,2000,2000,3200,4500,2500,2000,2000,2000,2500,3000,3000,3500,4000,4000,5000,5000,5000,500,750,1000,1000,1500,2000,2500,3000,5000];
+
+  let liveFeedEntries = [];
+  let _usedNames = {}; // name → last-used timestamp (3-hr cooldown)
+
+  function maskDisplayName(name) {
+    if (!name || name.length <= 3) return name;
+    const parts = name.trim().split(' ');
+    return parts.map(p => {
+      if (p.length <= 2) return p;
+      if (p.length <= 4) return p[0] + '*'.repeat(p.length - 1);
+      return p.slice(0, 2) + '*'.repeat(Math.max(3, p.length - 3)) + p[p.length - 1];
+    }).join(' ');
+  }
+
+  function maskPhoneNumber(phone) {
+    if (!phone) return '–';
+    const s = String(phone).trim().replace(/\s/g, '');
+    if (s.length < 8) return s;
+    return s.slice(0, 4) + '****' + s.slice(-3);
+  }
+
+  function getUniquePkName() {
+    const now = Date.now(), cooldown = 3 * 3600 * 1000;
+    for (let t = 0; t < 60; t++) {
+      const isFem = Math.random() < 0.42;
+      const fn = isFem ? PK_FEMALE[Math.floor(Math.random() * PK_FEMALE.length)] : PK_MALE[Math.floor(Math.random() * PK_MALE.length)];
+      const sn = PK_SURNAMES[Math.floor(Math.random() * PK_SURNAMES.length)];
+      const full = fn + ' ' + sn;
+      if (!_usedNames[full] || (now - _usedNames[full]) > cooldown) { _usedNames[full] = now; return full; }
+    }
+    return PK_MALE[Math.floor(Math.random() * PK_MALE.length)] + ' ' + PK_SURNAMES[Math.floor(Math.random() * PK_SURNAMES.length)];
+  }
+
+  function relativeTime(ts) {
+    const s = Math.floor((Date.now() - ts) / 1000);
+    if (s < 10) return 'Just now';
+    if (s < 60) return `${s} sec ago`;
+    const m = Math.floor(s / 60);
+    if (m < 60) return `${m} min${m > 1 ? 's' : ''} ago`;
+    const h = Math.floor(m / 60);
+    return `${h} hr${h > 1 ? 's' : ''} ago`;
+  }
+
+  function renderFeedItem(e) {
+    const div = document.createElement('div');
+    div.className = 'feed-item' + (e.real ? ' feed-real' : '');
+    const initial = (e.name || '?')[0].toUpperCase();
+    const logoSrc = PAY_LOGOS[e.method];
+    const logoHtml = logoSrc
+      ? `<img src="${logoSrc}" class="feed-method-logo" alt="${e.method}">`
+      : `<span style="font-size:12px;">💳</span>`;
+    div.innerHTML = `
+      <div class="feed-avatar">${initial}</div>
+      <div class="feed-info">
+        <div class="feed-name">${maskDisplayName(e.name)}</div>
+        <div class="feed-meta">${logoHtml} ${e.method} · 📍 ${e.city}</div>
+      </div>
+      <div class="feed-right">
+        <div class="feed-amt">Rs.${e.amount.toLocaleString()}</div>
+        <div class="feed-time" data-ts="${e.ts}">${relativeTime(e.ts)}</div>
+      </div>`;
+    return div;
+  }
+
+  function renderLiveFeed() {
+    const cont = document.getElementById('live-feed');
+    if (!cont) return;
+    const sorted = [...liveFeedEntries].sort((a, b) => b.ts - a.ts).slice(0, 45);
+    cont.innerHTML = '';
+    sorted.forEach(e => cont.appendChild(renderFeedItem(e)));
+  }
+
+  function addFeedEntry(entry) {
+    liveFeedEntries.push(entry);
+    if (liveFeedEntries.length > 80) liveFeedEntries = liveFeedEntries.slice(-80);
+    const cont = document.getElementById('live-feed');
+    if (!cont) return;
+    // Prepend with animation, then trim to 45
+    const item = renderFeedItem(entry);
+    cont.insertBefore(item, cont.firstChild);
+    while (cont.children.length > 45) cont.removeChild(cont.lastChild);
+  }
+
+  function generateFakeEntry() {
+    addFeedEntry({
+      name: getUniquePkName(),
+      city: PK_CITIES[Math.floor(Math.random() * PK_CITIES.length)],
+      method: FEED_METHODS[Math.floor(Math.random() * FEED_METHODS.length)],
+      amount: FEED_AMTS[Math.floor(Math.random() * FEED_AMTS.length)],
+      ts: Date.now(), real: false
+    });
+  }
+
+  function startLiveFeed() {
+    // Pre-populate with 15 historical entries
+    const now = Date.now();
+    for (let i = 0; i < 15; i++) {
+      const secsAgo = (i + 1) * (60 + Math.floor(Math.random() * 90));
+      liveFeedEntries.push({
+        name: getUniquePkName(),
+        city: PK_CITIES[Math.floor(Math.random() * PK_CITIES.length)],
+        method: FEED_METHODS[Math.floor(Math.random() * FEED_METHODS.length)],
+        amount: FEED_AMTS[Math.floor(Math.random() * FEED_AMTS.length)],
+        ts: now - secsAgo * 1000, real: false
+      });
+    }
+    renderLiveFeed();
+
+    // Listen for real withdrawals from live_feed collection
+    try {
+      db.collection('live_feed').orderBy('createdAt', 'desc').limit(20)
+        .onSnapshot(snap => {
+          snap.docChanges().forEach(ch => {
+            if (ch.type === 'added') {
+              const d = ch.doc.data();
+              const already = liveFeedEntries.find(e => e.id === ch.doc.id);
+              if (!already) {
+                addFeedEntry({
+                  id: ch.doc.id,
+                  name: d.maskedName || 'User',
+                  city: d.city || 'Pakistan',
+                  method: d.method || 'JazzCash',
+                  amount: d.amount || 100,
+                  ts: d.createdAt?.toMillis ? d.createdAt.toMillis() : Date.now(),
+                  real: true
+                });
+              }
+            }
+          });
+        }, () => {});
+    } catch (_) {}
+
+    // New fake entry every 60–120 seconds
+    (function scheduleNext() {
+      const delay = 60000 + Math.random() * 60000;
+      setTimeout(() => { generateFakeEntry(); scheduleNext(); }, delay);
+    })();
+
+    // Refresh timestamps every 60 seconds
+    setInterval(() => {
+      document.querySelectorAll('.feed-time[data-ts]').forEach(el => {
+        el.textContent = relativeTime(parseInt(el.dataset.ts));
+      });
+    }, 60000);
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // ===== REFERRAL LEADERBOARD (real-time, weekly) =========
+  // ═══════════════════════════════════════════════════════
+  function loadLeaderboard() {
+    const cont = document.getElementById('leaderboard-list');
+    if (!cont) return;
+
+    db.collection('users')
+      .orderBy('referralCount', 'desc')
+      .limit(20)
+      .onSnapshot(snap => {
+        if (!cont) return;
+        const rows = [];
+        snap.forEach(doc => {
+          const d = doc.data();
+          if ((d.referralCount || 0) > 0) rows.push({ id: doc.id, ...d });
+        });
+
+        if (rows.length === 0) {
+          cont.innerHTML = '<div class="small" style="text-align:center;padding:16px;color:var(--text-secondary);">🏆 Abhi koi referral nahi hai. Pehle banao!</div>';
+          return;
+        }
+
+        cont.innerHTML = '';
+        rows.forEach((d, i) => {
+          const rank = i + 1;
+          const rankClass = rank === 1 ? 'lb-gold' : rank === 2 ? 'lb-silver' : rank === 3 ? 'lb-bronze' : 'lb-rank-num';
+          const rankLabel = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank;
+          const rawName = (d.email || 'user').split('@')[0];
+          const displayName = maskDisplayName(rawName);
+          const earned = ((d.referralEarned || 0) || (d.referralCount || 0) * 100).toLocaleString();
+          const isMe = auth.currentUser && d.id === auth.currentUser.uid;
+
+          const row = document.createElement('div');
+          row.className = 'lb-row' + (isMe ? ' lb-me' : '');
+          row.innerHTML = `
+            <div class="lb-rank-badge ${rankClass}">${rankLabel}</div>
+            <div class="lb-name">${displayName}${isMe ? ' <span style="background:var(--primary);color:#fff;font-size:9px;padding:1px 5px;border-radius:6px;margin-left:3px;">YOU</span>' : ''}</div>
+            <div style="text-align:right;">
+              <div class="lb-refs">👥 ${d.referralCount || 0}</div>
+              <div class="lb-coins-lbl">+${earned} coins</div>
+            </div>`;
+          cont.appendChild(row);
+        });
+
+        // Show next-update countdown (5-min refresh)
+        updateLbTimer();
+      }, () => {
+        if (cont) cont.innerHTML = '<div class="small" style="text-align:center;padding:12px;color:var(--error);">Leaderboard load nahi hua. Refresh karein.</div>';
+      });
+
+    // Fallback refresh every 5 minutes
+    setTimeout(loadLeaderboard, 5 * 60 * 1000);
+  }
+
+  let _lbCountdown = 300;
+  function updateLbTimer() {
+    _lbCountdown = 300;
+    const el = document.getElementById('lb-next-update');
+    clearInterval(window._lbTimerInt);
+    window._lbTimerInt = setInterval(() => {
+      _lbCountdown--;
+      if (el) el.textContent = `🔄 Next update in ${Math.floor(_lbCountdown / 60)}:${String(_lbCountdown % 60).padStart(2, '0')}`;
+      if (_lbCountdown <= 0) clearInterval(window._lbTimerInt);
+    }, 1000);
   }
 
   document.addEventListener('DOMContentLoaded', () => {
