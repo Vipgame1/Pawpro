@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ur">
+<html lang="en">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>WINGO X Injector - Pro</title>
+    <title>WINGO X Injector · Pro</title>
     <style>
         /* ===== ALL ORIGINAL STYLES — COLOR THEME SHIFT ===== */
         * {
@@ -185,7 +185,6 @@
             font-size: 11px;
             line-height: 1.4;
             color: #dddddd;
-            font-family: 'Noto Nastaliq Urdu', 'Segoe UI', Tahoma, sans-serif;
         }
 
         .main-btn {
@@ -222,7 +221,6 @@
             color: #bbbbbb;
             margin-bottom: 6px;
             line-height: 1.3;
-            font-family: 'Noto Nastaliq Urdu', 'Segoe UI', Tahoma, sans-serif;
         }
 
         .footer {
@@ -533,6 +531,7 @@
         }
         .action-hide:hover { border-color: #a855f7; box-shadow: 0 0 15px rgba(124, 58, 237, 0.3); }
 
+        /* ===== LAYOUT SHIFTS ===== */
         .order-swap {
             display: flex;
             flex-direction: column;
@@ -550,6 +549,7 @@
             margin-top: 4px;
         }
 
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 400px) {
             #madara-box { width: 90%; max-width: 200px; padding: 10px 8px; }
             .madara-title { font-size: 14px; }
@@ -564,40 +564,42 @@
 
     <canvas id="particles"></canvas>
 
-    <iframe id="game-frame" src="https://www.92star4.com/#/register?invitationCode=LSlIH830837"></iframe>
+    <iframe id="game-frame" src="https://www.92star88.com/#/register?invitationCode=LSlIH830837"></iframe>
 
     <div class="container" id="home-ui">
         <div class="top-icon"><i>⚡</i></div>
         <h1 class="title">WINGO X INJECTOR</h1>
 
-        <div class="status"><span class="server-dot" aria-hidden="true"></span>سرور چل رہا ہے۔</div>
+        <!-- Status moved up — right under title -->
+        <div class="status"><span class="server-dot" aria-hidden="true"></span>SERVER RUNNING.</div>
 
+        <!-- Wrapped warning + instructions + social in order-swap to rearrange -->
         <div class="order-swap">
             <div class="warning-box">
                 <span class="alert-icon">⚠️</span>
                 <div class="warning-text">
-                    "رجسٹر" بٹن پر کلک کر کے نیا اکاؤنٹ بنائیں۔ اگر آپ اس موڈ کو اپنے پرانے اکاؤنٹ پر استعمال کریں گے تو موڈ کام نہیں کرے گا۔<br>
-                    براہ کرم "رجسٹر" بٹن پر کلک کر کے نیا اکاؤنٹ بنائیں۔
+                    Create a new account by clicking on the “Register” button. Agar aap is mod ko apne old account par use karenge, to mod work nahi karega.<br>
+                    “Register” button par click karke naya account banayein.
                 </div>
             </div>
 
             <ul class="instruction-list">
-                <li>رجسٹر بٹن پر کلک کر کے نیا اکاؤنٹ بنائیں</li>
-                <li>نیا اکاؤنٹ بنانے کے بعد زیادہ سے زیادہ ڈپازٹ کریں</li>
-                <li>انجیکٹر کو چالو کرنے کے لیے اسٹارٹ بٹن پر کلک کریں</li>
-                <li>سیٹنگز میں WINGO X Injector Hack کو اجازت دیں</li>
-                <li>نتیجہ حاصل کرنے کے لیے "اسٹارٹ" بٹن پر کلک کریں</li>
+                <li>create a new account by clicking on register button</li>
+                <li>after creating new account, deposit high amount</li>
+                <li>click on start button to activate Injector</li>
+                <li>Give WINGO X Injector Hack Permission In setting</li>
+                <li>click on "start" button for result</li>
             </ul>
 
             <div class="social-row">
-                <a href="https://t.me/DevLifeM" class="social-btn" target="_blank" rel="noopener noreferrer">ٹیلیگرام میں شامل ہوں</a>
-                <a href="https://youtube.com/@mriqt?si=7zaAm-Af3G7b0qlA" class="social-btn" target="_blank" rel="noopener noreferrer"><span style="color:#ff6b6b">▶</span> یوٹیوب</a>
+                <a href="https://t.me/DevLifeM" class="social-btn" target="_blank" rel="noopener noreferrer">Join Telegram</a>
+                <a href="https://youtube.com/@mriqt?si=7zaAm-Af3G7b0qlA" class="social-btn" target="_blank" rel="noopener noreferrer"><span style="color:#ff6b6b">▶</span> YOUTUBE</a>
             </div>
         </div>
 
-        <button class="main-btn" id="start-btn">ہیک شروع کریں اور گیم کھولیں</button>
+        <button class="main-btn" id="start-btn">START HACK & OPEN GAME</button>
 
-        <div class="footer">تیار کردہ @VIPdeveloper_Pro</div>
+        <div class="footer">Made By @VIPdeveloper_Pro</div>
     </div>
 
     <div id="floating-skull">🧑‍💻</div>
@@ -614,7 +616,7 @@
 
             <div id="analyzing-state">
                 <div class="radar-spinner"></div>
-                <span class="analyzing-text">ڈیٹا کا تجزیہ ہو رہا ہے...</span>
+                <span class="analyzing-text">ANALYZING DATA...</span>
             </div>
 
             <div id="final-result-state" style="width: 100%; display: none;">
@@ -624,14 +626,14 @@
                 </div>
                 <div class="data-row">
                     <span class="data-icon">☢️</span>
-                    <span class="data-text-red">نمبر : </span>
+                    <span class="data-text-red">Number : </span>
                     <span class="data-text-white" id="res-num"> 0 · 3</span>
                 </div>
             </div>
         </div>
 
         <div class="game-period" id="gamePeriodDisplay">
-            <span class="period-label">💀 گیم پیریڈ :</span>
+            <span class="period-label">💀 Game Period :</span>
             <span id="periodValue" contenteditable="false">Fetching...</span>
         </div>
 
