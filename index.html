@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ur">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>M S Injector - Pro RGB Edition</title>
+    <title>WINGO X Injector - Pro</title>
     <style>
-        /* ===== ALL ORIGINAL STYLES (unchanged colors & structure) ===== */
+        /* ===== ALL ORIGINAL STYLES — COLOR THEME SHIFT ===== */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -51,20 +51,20 @@
             max-width: 380px;
             background: rgba(12, 12, 12, 0.85);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(0, 255, 0, 0.6);
+            border: 1px solid rgba(0, 180, 255, 0.55);
             border-radius: 18px;
             padding: 24px 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
             z-index: 10;
-            box-shadow: 0 0 25px rgba(0, 255, 0, 0.2);
+            box-shadow: 0 0 25px rgba(0, 150, 255, 0.25);
             max-height: 92vh;
             overflow-y: auto;
         }
 
         .top-icon {
-            background: linear-gradient(135deg, #00ff00, #009900);
+            background: linear-gradient(135deg, #00c8ff, #7c3aed);
             width: 65px;
             height: 65px;
             border-radius: 50%;
@@ -72,17 +72,13 @@
             justify-content: center;
             align-items: center;
             margin-top: 5px;
-            box-shadow: 0 0 18px rgba(0, 255, 0, 0.6);
+            box-shadow: 0 0 18px rgba(0, 180, 255, 0.6);
             animation: pulse-glow 2s infinite alternate;
         }
 
         @keyframes pulse-glow {
-            0% {
-                box-shadow: 0 0 10px rgba(0, 255, 0, 0.4);
-            }
-            100% {
-                box-shadow: 0 0 22px rgba(0, 255, 0, 0.8);
-            }
+            0% { box-shadow: 0 0 10px rgba(0, 180, 255, 0.4); }
+            100% { box-shadow: 0 0 22px rgba(124, 58, 237, 0.7); }
         }
 
         .top-icon i {
@@ -93,13 +89,13 @@
         }
 
         h1.title {
-            color: #00ff00;
+            color: #00d4ff;
             font-size: 22px;
             font-weight: 800;
             margin-top: 15px;
             margin-bottom: 18px;
             letter-spacing: 1px;
-            text-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
+            text-shadow: 0 0 10px rgba(0, 180, 255, 0.8);
         }
 
         .social-row {
@@ -111,9 +107,9 @@
 
         .social-btn {
             flex: 1;
-            border: 1px solid rgba(0, 255, 0, 0.6);
-            background: rgba(0, 255, 0, 0.08);
-            color: #00ff00;
+            border: 1px solid rgba(0, 180, 255, 0.6);
+            background: rgba(0, 180, 255, 0.08);
+            color: #00d4ff;
             padding: 10px;
             border-radius: 8px;
             text-align: center;
@@ -125,6 +121,12 @@
             align-items: center;
             gap: 6px;
             transition: all 0.3s ease;
+        }
+
+        .social-btn:hover {
+            background: rgba(0, 180, 255, 0.18);
+            border-color: #7c3aed;
+            box-shadow: 0 0 12px rgba(0, 180, 255, 0.2);
         }
 
         .status {
@@ -139,8 +141,29 @@
             gap: 7px;
         }
 
+        .server-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #00d4ff;
+            box-shadow: 0 0 6px #00d4ff, 0 0 12px rgba(0, 180, 255, .65);
+            animation: serverDotTravel 1.8s ease-in-out infinite;
+            flex: 0 0 auto;
+        }
+
+        @keyframes serverDotTravel {
+            0%, 100% {
+                transform: translateX(-9px);
+                opacity: .45;
+            }
+            50% {
+                transform: translateX(9px);
+                opacity: 1;
+            }
+        }
+
         .warning-box {
-            border: 1px solid rgba(0, 255, 0, 0.5);
+            border: 1px solid rgba(124, 58, 237, 0.5);
             border-radius: 10px;
             padding: 12px 14px;
             display: flex;
@@ -152,21 +175,22 @@
         }
 
         .warning-box span.alert-icon {
-            color: #ff3333;
+            color: #ff6b6b;
             font-size: 26px;
             line-height: 1;
-            text-shadow: 0 0 6px red;
+            text-shadow: 0 0 6px #ff6b6b;
         }
 
         .warning-text {
             font-size: 11px;
             line-height: 1.4;
             color: #dddddd;
+            font-family: 'Noto Nastaliq Urdu', 'Segoe UI', Tahoma, sans-serif;
         }
 
         .main-btn {
-            background: linear-gradient(135deg, #ffffff, #cccccc);
-            color: black;
+            background: linear-gradient(135deg, #00c8ff, #7c3aed);
+            color: #fff;
             border: none;
             padding: 12px 0;
             width: 70%;
@@ -175,7 +199,7 @@
             font-weight: bold;
             cursor: pointer;
             margin-bottom: 18px;
-            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 180, 255, 0.35);
             transition: transform 0.2s, box-shadow 0.2s;
             text-decoration: none;
             display: flex;
@@ -184,12 +208,8 @@
             text-align: center;
         }
 
-        .main-btn:active {
-            transform: scale(0.95);
-        }
-        .main-btn:hover {
-            box-shadow: 0 4px 20px rgba(255, 255, 255, 0.5);
-        }
+        .main-btn:active { transform: scale(0.95); }
+        .main-btn:hover { box-shadow: 0 4px 20px rgba(124, 58, 237, 0.5); }
 
         .instruction-list {
             width: 100%;
@@ -202,15 +222,16 @@
             color: #bbbbbb;
             margin-bottom: 6px;
             line-height: 1.3;
+            font-family: 'Noto Nastaliq Urdu', 'Segoe UI', Tahoma, sans-serif;
         }
 
         .footer {
-            color: #00ff00;
+            color: #00d4ff;
             font-size: 13px;
             font-weight: bold;
             margin-top: 5px;
             letter-spacing: 1px;
-            text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+            text-shadow: 0 0 5px rgba(0, 180, 255, 0.5);
         }
 
         #floating-skull {
@@ -222,25 +243,17 @@
             font-size: 36px;
             z-index: 999;
             cursor: grab;
-            filter: drop-shadow(0 0 8px red);
+            filter: drop-shadow(0 0 8px #7c3aed);
             animation: pulse-skull 1.5s infinite alternate;
             user-select: none;
             touch-action: none;
         }
 
-        #floating-skull:active {
-            cursor: grabbing;
-        }
+        #floating-skull:active { cursor: grabbing; }
 
         @keyframes pulse-skull {
-            0% {
-                transform: translate(-50%, -50%) scale(1);
-                filter: drop-shadow(0 0 6px red);
-            }
-            100% {
-                transform: translate(-50%, -50%) scale(1.15);
-                filter: drop-shadow(0 0 16px red);
-            }
+            0% { transform: translate(-50%, -50%) scale(1); filter: drop-shadow(0 0 6px #7c3aed); }
+            100% { transform: translate(-50%, -50%) scale(1.15); filter: drop-shadow(0 0 16px #00c8ff); }
         }
 
         #madara-box {
@@ -251,41 +264,24 @@
             transform: translate(-50%, -50%);
             width: 220px;
             background-color: #020202;
-            border: 1.5px solid #00e5ff;
+            border: 1.5px solid #00c8ff;
             border-radius: 12px;
             padding: 12px 10px 10px 10px;
             z-index: 1000;
-            box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
+            box-shadow: 0 0 20px rgba(0, 180, 255, 0.3);
             cursor: grab;
             animation: rgb-box-shadow 4s linear infinite;
             touch-action: none;
         }
 
-        #madara-box:active {
-            cursor: grabbing;
-        }
+        #madara-box:active { cursor: grabbing; }
 
         @keyframes rgb-box-shadow {
-            0% {
-                box-shadow: 0 0 15px #ff0000;
-                border-color: #ff0000;
-            }
-            25% {
-                box-shadow: 0 0 15px #00ff00;
-                border-color: #00ff00;
-            }
-            50% {
-                box-shadow: 0 0 15px #0000ff;
-                border-color: #0000ff;
-            }
-            75% {
-                box-shadow: 0 0 15px #ff00ff;
-                border-color: #ff00ff;
-            }
-            100% {
-                box-shadow: 0 0 15px #ff0000;
-                border-color: #ff0000;
-            }
+            0% { box-shadow: 0 0 15px #00c8ff; border-color: #00c8ff; }
+            25% { box-shadow: 0 0 15px #7c3aed; border-color: #7c3aed; }
+            50% { box-shadow: 0 0 15px #00d4ff; border-color: #00d4ff; }
+            75% { box-shadow: 0 0 15px #a855f7; border-color: #a855f7; }
+            100% { box-shadow: 0 0 15px #00c8ff; border-color: #00c8ff; }
         }
 
         .madara-title {
@@ -294,7 +290,7 @@
             font-weight: 900;
             font-style: italic;
             font-family: 'Arial Black', Impact, sans-serif;
-            background: linear-gradient(90deg, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
+            background: linear-gradient(90deg, #00c8ff, #7c3aed, #a855f7, #00d4ff, #00c8ff);
             background-size: 200% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -303,22 +299,18 @@
             animation: rgb-text 3s linear infinite;
         }
 
-        @keyframes rgb-text {
-            to {
-                background-position: 200% center;
-            }
-        }
+        @keyframes rgb-text { to { background-position: 200% center; } }
 
         .result-frame {
             position: relative;
-            border-top: 2px solid #ff0000;
-            border-left: 2px solid #ff0000;
-            border-bottom: 2px solid #ffffff;
-            border-right: 2px solid #ffffff;
+            border-top: 2px solid #00c8ff;
+            border-left: 2px solid #00c8ff;
+            border-bottom: 2px solid #a855f7;
+            border-right: 2px solid #a855f7;
             border-radius: 8px;
             padding: 16px 6px 10px 6px;
             margin-bottom: 8px;
-            background: rgba(255, 0, 0, 0.04);
+            background: rgba(0, 180, 255, 0.04);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -341,14 +333,14 @@
         }
 
         .result-badge .bracket {
-            background: linear-gradient(90deg, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
+            background: linear-gradient(90deg, #00c8ff, #7c3aed, #a855f7, #00d4ff, #00c8ff);
             background-size: 200% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: rgb-text 3s linear infinite;
         }
         .result-badge .red-txt {
-            background: linear-gradient(90deg, #ff0000, #ff4444, #ff0000);
+            background: linear-gradient(90deg, #ff6b6b, #ff4444, #ff6b6b);
             background-size: 200% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -362,7 +354,6 @@
             animation: rgb-text 2.5s linear infinite;
         }
 
-        /* ===== 🔥 NEW ANALYZING ANIMATION CSS (unchanged) ===== */
         #analyzing-state {
             display: none;
             flex-direction: column;
@@ -373,25 +364,21 @@
         .radar-spinner {
             width: 25px;
             height: 25px;
-            border: 3px solid rgba(0, 255, 255, 0.2);
-            border-top: 3px solid #00ffff;
+            border: 3px solid rgba(0, 180, 255, 0.2);
+            border-top: 3px solid #00d4ff;
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin-bottom: 6px;
-            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+            box-shadow: 0 0 10px rgba(0, 180, 255, 0.5);
         }
 
         @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .analyzing-text {
-            color: #00ffff;
+            color: #00d4ff;
             font-size: 11px;
             font-weight: bold;
             font-family: 'Courier New', Courier, monospace;
@@ -400,28 +387,11 @@
         }
 
         @keyframes glitch-text {
-            0% {
-                opacity: 1;
-                transform: skewX(0deg);
-                text-shadow: 0 0 5px #00ffff;
-            }
-            20% {
-                opacity: 0.8;
-                transform: skewX(-5deg);
-            }
-            40% {
-                opacity: 1;
-                transform: skewX(5deg);
-                text-shadow: -2px 0 red, 2px 0 blue;
-            }
-            60% {
-                opacity: 0.9;
-                transform: skewX(0deg);
-                text-shadow: 0 0 5px #00ffff;
-            }
-            100% {
-                opacity: 1;
-            }
+            0% { opacity: 1; transform: skewX(0deg); text-shadow: 0 0 5px #00d4ff; }
+            20% { opacity: 0.8; transform: skewX(-5deg); }
+            40% { opacity: 1; transform: skewX(5deg); text-shadow: -2px 0 #7c3aed, 2px 0 #00c8ff; }
+            60% { opacity: 0.9; transform: skewX(0deg); text-shadow: 0 0 5px #00d4ff; }
+            100% { opacity: 1; }
         }
 
         .pop-anim {
@@ -429,17 +399,10 @@
         }
 
         @keyframes pop-in {
-            0% {
-                transform: scale(0.5);
-                opacity: 0;
-            }
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
         }
 
-        /* ===== DATA ROWS ===== */
         .data-row {
             display: flex;
             align-items: center;
@@ -447,14 +410,12 @@
             margin-bottom: 6px;
             width: 100%;
         }
-        .data-row:last-child {
-            margin-bottom: 0;
-        }
+        .data-row:last-child { margin-bottom: 0; }
 
         .data-icon {
             font-size: 15px;
             margin-right: 6px;
-            background: radial-gradient(circle, rgba(255, 215, 0, 0.4) 0%, transparent 60%);
+            background: radial-gradient(circle, rgba(0, 180, 255, 0.4) 0%, transparent 60%);
             border-radius: 50%;
         }
 
@@ -463,7 +424,7 @@
             font-weight: bold;
             font-family: 'Arial Black', sans-serif;
             letter-spacing: 0.5px;
-            background: linear-gradient(90deg, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
+            background: linear-gradient(90deg, #00c8ff, #7c3aed, #a855f7, #00d4ff, #00c8ff);
             background-size: 200% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -475,7 +436,7 @@
             font-weight: bold;
             font-family: 'Arial Black', sans-serif;
             margin-left: 4px;
-            background: linear-gradient(90deg, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
+            background: linear-gradient(90deg, #00c8ff, #7c3aed, #a855f7, #00d4ff, #00c8ff);
             background-size: 200% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -488,7 +449,7 @@
             text-align: center;
             margin-bottom: 10px;
             letter-spacing: 0.3px;
-            background: linear-gradient(90deg, #00ff00, #00ffff, #00ff00);
+            background: linear-gradient(90deg, #00d4ff, #7c3aed, #00d4ff);
             background-size: 200% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -512,7 +473,7 @@
         }
 
         .game-period .period-label {
-            -webkit-text-fill-color: #00ff00;
+            -webkit-text-fill-color: #00d4ff;
         }
 
         .action-row {
@@ -545,138 +506,57 @@
             touch-action: manipulation;
         }
 
-        .action-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 12px rgba(255, 255, 255, 0.15);
-        }
-        .action-btn:active {
-            transform: scale(0.95);
-        }
+        .action-btn:hover { transform: scale(1.05); box-shadow: 0 0 12px rgba(255, 255, 255, 0.15); }
+        .action-btn:active { transform: scale(0.95); }
 
         .action-exit {
-            background: linear-gradient(90deg, #ff0000, #ff4444, #ff0000);
+            background: linear-gradient(90deg, #ff6b6b, #ff4444, #ff6b6b);
             -webkit-background-clip: text;
             background-clip: text;
             border-color: rgba(255, 0, 0, 0.3);
         }
-        .action-exit:hover {
-            border-color: #ff0000;
-            box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
-        }
+        .action-exit:hover { border-color: #ff6b6b; box-shadow: 0 0 15px rgba(255, 0, 0, 0.3); }
 
         .action-dark {
-            background: linear-gradient(90deg, #00ffff, #0088ff, #00ffff);
+            background: linear-gradient(90deg, #00c8ff, #7c3aed, #00c8ff);
             -webkit-background-clip: text;
             background-clip: text;
-            border-color: rgba(0, 255, 255, 0.3);
+            border-color: rgba(0, 180, 255, 0.3);
         }
-        .action-dark:hover {
-            border-color: #00ffff;
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
-        }
+        .action-dark:hover { border-color: #00c8ff; box-shadow: 0 0 15px rgba(0, 180, 255, 0.3); }
 
         .action-hide {
-            background: linear-gradient(90deg, #00ff00, #88ff88, #00ff00);
+            background: linear-gradient(90deg, #7c3aed, #a855f7, #7c3aed);
             -webkit-background-clip: text;
             background-clip: text;
-            border-color: rgba(0, 255, 0, 0.3);
+            border-color: rgba(124, 58, 237, 0.3);
         }
-        .action-hide:hover {
-            border-color: #00ff00;
-            box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
-        }
+        .action-hide:hover { border-color: #a855f7; box-shadow: 0 0 15px rgba(124, 58, 237, 0.3); }
 
-        .server-dot {
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            background: #00ff00;
-            box-shadow: 0 0 6px #00ff00, 0 0 12px rgba(0, 255, 0, .65);
-            animation: serverDotTravel 1.8s ease-in-out infinite;
-            flex: 0 0 auto;
-        }
-
-        @keyframes serverDotTravel {
-            0%,
-            100% {
-                transform: translateX(-9px);
-                opacity: .45;
-            }
-            50% {
-                transform: translateX(9px);
-                opacity: 1;
-            }
-        }
-
-        /* ===== confidence bar (new design element) ===== */
-        .confidence-wrap {
+        .order-swap {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            margin-top: 4px;
+            flex-direction: column;
             width: 100%;
-            font-size: 8px;
-            font-weight: bold;
-            font-family: 'Arial Black', sans-serif;
-            letter-spacing: 0.5px;
-            color: #aaaaaa;
         }
 
-        .confidence-track {
-            width: 60px;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.08);
+        .order-swap .warning-box {
+            order: 1;
         }
-
-        .confidence-fill {
-            height: 100%;
-            width: 0%;
-            border-radius: 4px;
-            background: linear-gradient(90deg, #ff0000, #ffff00, #00ff00);
-            transition: width 0.6s ease;
+        .order-swap .instruction-list {
+            order: 2;
         }
-
-        .confidence-label {
-            min-width: 28px;
-            text-align: center;
-            font-size: 8px;
-            color: #00ff00;
-            text-shadow: 0 0 6px rgba(0, 255, 0, 0.5);
+        .order-swap .social-row {
+            order: 3;
+            margin-top: 4px;
         }
 
         @media (max-width: 400px) {
-            #madara-box {
-                width: 90%;
-                max-width: 200px;
-                padding: 10px 8px;
-            }
-            .madara-title {
-                font-size: 14px;
-            }
-            .data-text-red,
-            .data-text-white {
-                font-size: 12px;
-            }
-            .action-btn {
-                font-size: 9px;
-                padding: 2px 4px;
-            }
-            .result-badge {
-                font-size: 10px;
-            }
-            .game-period {
-                font-size: 8px;
-            }
-            .confidence-wrap {
-                font-size: 7px;
-            }
-            .confidence-track {
-                width: 40px;
-            }
+            #madara-box { width: 90%; max-width: 200px; padding: 10px 8px; }
+            .madara-title { font-size: 14px; }
+            .data-text-red, .data-text-white { font-size: 12px; }
+            .action-btn { font-size: 9px; padding: 2px 4px; }
+            .result-badge { font-size: 10px; }
+            .game-period { font-size: 8px; }
         }
     </style>
 </head>
@@ -684,44 +564,46 @@
 
     <canvas id="particles"></canvas>
 
-    <iframe id="game-frame" src="https://www.92strike44.com/#/register?invitationCode=47442100233"></iframe>
+    <iframe id="game-frame" src="https://www.92star4.com/#/register?invitationCode=LSlIH830837"></iframe>
 
     <div class="container" id="home-ui">
-        <div class="top-icon"><i>M</i></div>
-        <h1 class="title">M S INJECTOR</h1>
+        <div class="top-icon"><i>⚡</i></div>
+        <h1 class="title">WINGO X INJECTOR</h1>
 
-        <div class="social-row">
-            <a href="https://t.me/DevLifeM" class="social-btn" target="_blank" rel="noopener noreferrer">Join Telegram</a>
-            <a href="https://youtube.com/@mriqt?si=14ixv_V6AcYjM9VO" class="social-btn" target="_blank" rel="noopener noreferrer"><span style="color:red">▶</span> YOUTUBE</a>
-        </div>
+        <div class="status"><span class="server-dot" aria-hidden="true"></span>سرور چل رہا ہے۔</div>
 
-        <div class="status"><span class="server-dot" aria-hidden="true"></span>SYSTEM ACTIVE.</div>
+        <div class="order-swap">
+            <div class="warning-box">
+                <span class="alert-icon">⚠️</span>
+                <div class="warning-text">
+                    "رجسٹر" بٹن پر کلک کر کے نیا اکاؤنٹ بنائیں۔ اگر آپ اس موڈ کو اپنے پرانے اکاؤنٹ پر استعمال کریں گے تو موڈ کام نہیں کرے گا۔<br>
+                    براہ کرم "رجسٹر" بٹن پر کلک کر کے نیا اکاؤنٹ بنائیں۔
+                </div>
+            </div>
 
-        <div class="warning-box">
-            <span class="alert-icon">⚠️</span>
-            <div class="warning-text">
-                Create a new account by clicking on 'Register' button, if you use this mod in your old account, then mod will not work.<br>
-                'Register' बटन पर क्लिक करके नया account बनाएं।
+            <ul class="instruction-list">
+                <li>رجسٹر بٹن پر کلک کر کے نیا اکاؤنٹ بنائیں</li>
+                <li>نیا اکاؤنٹ بنانے کے بعد زیادہ سے زیادہ ڈپازٹ کریں</li>
+                <li>انجیکٹر کو چالو کرنے کے لیے اسٹارٹ بٹن پر کلک کریں</li>
+                <li>سیٹنگز میں WINGO X Injector Hack کو اجازت دیں</li>
+                <li>نتیجہ حاصل کرنے کے لیے "اسٹارٹ" بٹن پر کلک کریں</li>
+            </ul>
+
+            <div class="social-row">
+                <a href="https://t.me/DevLifeM" class="social-btn" target="_blank" rel="noopener noreferrer">ٹیلیگرام میں شامل ہوں</a>
+                <a href="https://youtube.com/@mriqt?si=7zaAm-Af3G7b0qlA" class="social-btn" target="_blank" rel="noopener noreferrer"><span style="color:#ff6b6b">▶</span> یوٹیوب</a>
             </div>
         </div>
 
-        <ul class="instruction-list">
-            <li>create a new account by clicking on register button</li>
-            <li>after creating new account, deposit high amount</li>
-            <li>click on start button to activate Injector</li>
-            <li>Give M S Injector Hack Permission In setting</li>
-            <li>click on "activate" button for result</li>
-        </ul>
+        <button class="main-btn" id="start-btn">ہیک شروع کریں اور گیم کھولیں</button>
 
-        <button class="main-btn" id="start-btn">ACTIVATE INJECTOR &amp; LAUNCH</button>
-
-        <div class="footer">Made By @M S Pro</div>
+        <div class="footer">تیار کردہ @VIPdeveloper_Pro</div>
     </div>
 
     <div id="floating-skull">🧑‍💻</div>
 
     <div id="madara-box">
-        <div class="madara-title">M S</div>
+        <div class="madara-title">WINGO HACK</div>
 
         <div class="result-frame" id="result-frame">
             <div class="result-badge">
@@ -732,7 +614,7 @@
 
             <div id="analyzing-state">
                 <div class="radar-spinner"></div>
-                <span class="analyzing-text">ANALYZING DATA...</span>
+                <span class="analyzing-text">ڈیٹا کا تجزیہ ہو رہا ہے...</span>
             </div>
 
             <div id="final-result-state" style="width: 100%; display: none;">
@@ -742,35 +624,27 @@
                 </div>
                 <div class="data-row">
                     <span class="data-icon">☢️</span>
-                    <span class="data-text-red">Number : </span>
+                    <span class="data-text-red">نمبر : </span>
                     <span class="data-text-white" id="res-num"> 0 · 3</span>
-                </div>
-                <!-- Confidence bar -->
-                <div class="confidence-wrap">
-                    <span>⚡</span>
-                    <span class="confidence-track">
-                        <span class="confidence-fill" id="confFill" style="width:0%"></span>
-                    </span>
-                    <span class="confidence-label" id="confLabel">0%</span>
                 </div>
             </div>
         </div>
 
         <div class="game-period" id="gamePeriodDisplay">
-            <span class="period-label">💀 Game Period :</span>
+            <span class="period-label">💀 گیم پیریڈ :</span>
             <span id="periodValue" contenteditable="false">Fetching...</span>
         </div>
 
         <div class="action-row">
             <span class="action-btn action-exit" id="btn-exit">EXIT</span>
-            <span class="action-btn action-dark" id="btn-dark-label">M S</span>
+            <span class="action-btn action-dark" id="btn-dark-label">WINGO HACK</span>
             <span class="action-btn action-hide" id="btn-hide">HIDE</span>
         </div>
     </div>
 
     <script>
         // ============================================================
-        // 1. CONSTELLATION PARTICLES (unchanged)
+        // 1. CONSTELLATION PARTICLES
         // ============================================================
         const canvas = document.getElementById('particles');
         const ctx = canvas.getContext('2d');
@@ -798,8 +672,8 @@
                 if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
             }
             draw() {
-                ctx.fillStyle = '#00ff00';
-                ctx.shadowColor = '#00ff00';
+                ctx.fillStyle = '#00c8ff';
+                ctx.shadowColor = '#00c8ff';
                 ctx.shadowBlur = 4;
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
@@ -824,7 +698,7 @@
                     const distance = Math.sqrt(dx * dx + dy * dy);
                     if (distance < maxDistance) {
                         const opacity = 1 - (distance / maxDistance);
-                        ctx.strokeStyle = `rgba(0, 255, 0, ${opacity * 0.35})`;
+                        ctx.strokeStyle = `rgba(0, 200, 255, ${opacity * 0.35})`;
                         ctx.lineWidth = 0.9;
                         ctx.beginPath();
                         ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
@@ -849,7 +723,7 @@
             initParticles(); });
 
         // ============================================================
-        // 2. UI ELEMENTS & DRAG LOGIC (unchanged)
+        // 2. UI ELEMENTS & DRAG LOGIC
         // ============================================================
         const startBtn = document.getElementById('start-btn');
         const homeUi = document.getElementById('home-ui');
@@ -1024,7 +898,7 @@
         window.addEventListener('touchend', () => { touchInjector.active = false; }, { passive: true });
 
         // ============================================================
-        // 3. 🔥 NEW INJECTOR ENGINE — PATTERN-BASED PREDICTOR
+        // 9. LIVE HISTORY ANALYZER (DESCRIPTIVE ONLY)
         // ============================================================
         const periodValueSpan = document.getElementById('periodValue');
         const analyzingState = document.getElementById('analyzing-state');
@@ -1032,8 +906,6 @@
         const resIcon = document.getElementById('res-icon');
         const resSize = document.getElementById('res-size');
         const resNum = document.getElementById('res-num');
-        const confFill = document.getElementById('confFill');
-        const confLabel = document.getElementById('confLabel');
 
         const HISTORY_API = 'https://draw.ar-lottery01.com/WinGo/WinGo_1M/GetHistoryIssuePage.json';
         const HISTORY_PROXY = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(HISTORY_API);
@@ -1075,164 +947,12 @@
             }
         }
 
-        // ------------------------------------------------------------
-        // 3a. NEW PREDICTION ENGINE — pattern matching + weighted voting
-        // ------------------------------------------------------------
-        function predictWithPattern(rows) {
-            if (!rows || rows.length < 6) {
-                return { result: 'NEUTRAL', numbers: [0, 5], confidence: 0 };
-            }
-
-            // we need at least 5 results to form a pattern
-            const patternLen = Math.min(5, rows.length - 1);
-            // latest pattern = last `patternLen` results (BIG/SMALL)
-            const latestSlice = rows.slice(0, patternLen);
-            const patternKey = latestSlice.map(r => r.number >= 5 ? 'B' : 'S').join('');
-
-            // scan history for matches (excluding the latest)
-            let matches = [];
-            for (let i = patternLen; i < rows.length - 1; i++) {
-                const windowSlice = rows.slice(i, i + patternLen);
-                if (windowSlice.length < patternLen) break;
-                const key = windowSlice.map(r => r.number >= 5 ? 'B' : 'S').join('');
-                if (key === patternKey) {
-                    // what came after?
-                    const next = rows[i + patternLen];
-                    if (next && Number.isInteger(next.number)) {
-                        matches.push({
-                            index: i,
-                            nextNumber: next.number,
-                            nextSize: next.number >= 5 ? 'BIG' : 'SMALL',
-                            recency: i // lower = more recent in history (0 is newest)
-                        });
-                    }
-                }
-            }
-
-            // If not enough matches, fallback to frequency analysis
-            if (matches.length < 2) {
-                return fallbackFrequency(rows);
-            }
-
-            // Weight matches: more recent = higher weight
-            const maxIndex = Math.max(...matches.map(m => m.index));
-            const minIndex = Math.min(...matches.map(m => m.index));
-            const range = maxIndex - minIndex || 1;
-
-            let bigScore = 0,
-                smallScore = 0;
-            let numberVotes = Array(10).fill(0);
-
-            matches.forEach(m => {
-                // recency weight: 1.0 for most recent, ~0.3 for oldest in match set
-                const rawWeight = 1 - ((m.index - minIndex) / range) * 0.7;
-                const weight = Math.max(0.25, rawWeight);
-
-                if (m.nextSize === 'BIG') bigScore += weight;
-                else smallScore += weight;
-
-                numberVotes[m.nextNumber] += weight;
-            });
-
-            const total = bigScore + smallScore;
-            let result = 'NEUTRAL';
-            if (total > 0) {
-                const bigPct = bigScore / total;
-                result = bigPct > 0.55 ? 'BIG' : (bigPct < 0.45 ? 'SMALL' : 'NEUTRAL');
-            }
-
-            // Confidence: based on match count and score spread
-            const matchQuality = Math.min(1, matches.length / 12);
-            let spread = Math.abs(bigScore - smallScore) / (total || 1);
-            spread = Math.min(1, spread * 1.6);
-            const confidence = Math.round((matchQuality * 0.5 + spread * 0.5) * 100);
-
-            // Top numbers
-            let topNumbers = numberVotes
-                .map((v, n) => ({ n, v }))
-                .sort((a, b) => b.v - a.v)
-                .slice(0, 3)
-                .map(x => x.n);
-
-            // If result is BIG, filter numbers ≥5; if SMALL, filter ≤4
-            if (result === 'BIG') {
-                const filtered = topNumbers.filter(n => n >= 5);
-                if (filtered.length >= 2) topNumbers = filtered.slice(0, 2);
-                else {
-                    // fallback: top 2 BIG from all votes
-                    const allBig = numberVotes.map((v, n) => ({ n, v }))
-                        .filter(x => x.n >= 5)
-                        .sort((a, b) => b.v - a.v)
-                        .slice(0, 2)
-                        .map(x => x.n);
-                    if (allBig.length === 2) topNumbers = allBig;
-                }
-            } else if (result === 'SMALL') {
-                const filtered = topNumbers.filter(n => n <= 4);
-                if (filtered.length >= 2) topNumbers = filtered.slice(0, 2);
-                else {
-                    const allSmall = numberVotes.map((v, n) => ({ n, v }))
-                        .filter(x => x.n <= 4)
-                        .sort((a, b) => b.v - a.v)
-                        .slice(0, 2)
-                        .map(x => x.n);
-                    if (allSmall.length === 2) topNumbers = allSmall;
-                }
-            }
-
-            // ensure we always have 2 numbers
-            while (topNumbers.length < 2) {
-                const fallback = result === 'BIG' ? [7, 8] : [2, 3];
-                topNumbers = fallback;
-            }
-            topNumbers = topNumbers.slice(0, 2);
-
-            return { result, numbers: topNumbers, confidence };
-        }
-
-        // fallback: simple frequency + recency
-        function fallbackFrequency(rows) {
-            const pool = rows.slice(0, 60);
-            if (!pool.length) return { result: 'NEUTRAL', numbers: [4, 5], confidence: 30 };
-
-            let big = 0,
-                small = 0;
-            const counts = Array(10).fill(0);
-            pool.forEach((r, i) => {
-                const n = r.number;
-                const w = 1 + (1 - i / Math.max(pool.length, 1)) * 0.5;
-                if (n >= 5) big += w;
-                else small += w;
-                counts[n] += w;
-            });
-
-            let result = 'NEUTRAL';
-            const total = big + small;
-            if (total > 0) {
-                const bigPct = big / total;
-                result = bigPct > 0.54 ? 'BIG' : (bigPct < 0.46 ? 'SMALL' : 'NEUTRAL');
-            }
-
-            const top = counts.map((v, n) => ({ n, v }))
-                .sort((a, b) => b.v - a.v)
-                .slice(0, 2)
-                .map(x => x.n);
-
-            const confidence = Math.min(60, 30 + Math.abs(big - small) / (total || 1) * 30);
-            return { result, numbers: top.length === 2 ? top : [4, 5], confidence: Math.round(confidence) };
-        }
-
-        // ------------------------------------------------------------
-        // 3b. RENDER — uses the new engine
-        // ------------------------------------------------------------
         function renderHistorySummary(rows) {
             if (!rows.length) {
                 periodValueSpan.textContent = 'History unavailable';
                 resIcon.textContent = '⚠️';
                 resSize.textContent = 'NO DATA';
                 resNum.textContent = ' —';
-                confFill.style.width = '0%';
-                confLabel.textContent = '0%';
                 return;
             }
 
@@ -1244,17 +964,158 @@
                 nextPeriod = String(latest.period) + ' + 1';
             }
 
-            // Use the new pattern-based predictor
-            const prediction = predictWithPattern(rows);
-
             const key = String(nextPeriod).slice(-1);
+            const pool = rows.slice(1, 101);
+
+            const sizes = pool.map(r =>
+                Number(r.number) >= 5 ? 'BIG' : 'SMALL'
+            );
+
+            function runs(arr) {
+                const out = [];
+                if (!arr.length) return out;
+                let type = arr[0],
+                    len = 1;
+                for (let i = 1; i < arr.length; i++) {
+                    if (arr[i] === type) len++;
+                    else {
+                        out.push({ type, len });
+                        type = arr[i];
+                        len = 1;
+                    }
+                }
+                out.push({ type, len });
+                return out;
+            }
+
+            const runList = runs(sizes);
+            const currentRun = runList[0] || { type: 'NONE', len: 0 };
+            const longestRun = runList.reduce(
+                (a, b) => b.len > a.len ? b : a, { type: 'NONE', len: 0 }
+            );
+
+            const first12 = sizes.slice(0, 12);
+            let switches = 0;
+            for (let i = 1; i < first12.length; i++) {
+                if (first12[i] !== first12[i - 1]) switches++;
+            }
+
+            const alternationRatio =
+                first12.length > 1 ? switches / (first12.length - 1) : 0;
+
+            let regime = 'MIXED';
+            if (currentRun.len >= 6) regime = 'LONG RUN';
+            else if (currentRun.len >= 3) regime = 'SHORT RUN';
+            else if (alternationRatio >= 0.72) regime = '1V1 / ALTERNATING';
+            else if (alternationRatio >= 0.48) regime = '2V2 / ROTATING';
+            else regime = 'BALANCED';
+
+            const exact = pool.filter(
+                r => String(r.period ?? '').slice(-1) === key
+            );
+            const matched = exact.length >= 5 ? exact : pool;
+
+            const score = { BIG: 1, SMALL: 1 };
+            const nums = Array.from({ length: 10 }, (_, n) => ({
+                n,
+                score: 0,
+                hits: 0,
+                recent: 999
+            }));
+
+            matched.forEach((r, i) => {
+                const n = Number(r.number);
+                if (!Number.isInteger(n) || n < 0 || n > 9) return;
+
+                const decay = Math.exp(-i / Math.max(18, matched.length * .55));
+                const keyBoost =
+                    String(r.period ?? '').slice(-1) === key ? 1.55 : 1;
+                const w = decay * keyBoost;
+
+                nums[n].score += w;
+                nums[n].hits++;
+                nums[n].recent = Math.min(nums[n].recent, i);
+
+                score[n >= 5 ? 'BIG' : 'SMALL'] += w;
+            });
+
+            [6, 12, 30].forEach((windowSize, wi) => {
+                const slice = pool.slice(0, windowSize);
+                const weight = wi === 0 ? 1.15 : wi === 1 ? .75 : .45;
+
+                slice.forEach((r, i) => {
+                    const n = Number(r.number);
+                    if (!Number.isInteger(n)) return;
+                    const rec = 1 - (i / Math.max(slice.length, 1)) * .65;
+                    score[n >= 5 ? 'BIG' : 'SMALL'] += rec * weight;
+                });
+            });
+
+            for (let i = 1; i < pool.length; i++) {
+                const sourcePeriod = String(pool[i].period ?? '');
+                const prevN = Number(pool[i].number);
+                const nextN = Number(pool[i - 1].number);
+                if (!Number.isInteger(prevN) || !Number.isInteger(nextN)) continue;
+
+                if (sourcePeriod.slice(-1) === key) {
+                    const target = nextN >= 5 ? 'BIG' : 'SMALL';
+                    score[target] += .85;
+                }
+            }
+
+            if (regime === 'LONG RUN') {
+                const opposite = currentRun.type === 'BIG' ? 'SMALL' : 'BIG';
+                score[opposite] += Math.min(2.0, currentRun.len * .22);
+            } else if (regime === '1V1 / ALTERNATING') {
+                score.BIG += .15;
+                score.SMALL += .15;
+            } else if (regime === '2V2 / ROTATING') {
+                score.BIG += .10;
+                score.SMALL += .10;
+            }
+
+            const total = score.BIG + score.SMALL;
+            const bigPct = score.BIG / total * 100;
+            const smallPct = score.SMALL / total * 100;
+            const edge = Math.abs(bigPct - smallPct);
+
+            const threshold =
+                regime === 'LONG RUN' ? 9 :
+                regime === 'SHORT RUN' ? 8 :
+                regime === '1V1 / ALTERNATING' ? 11 :
+                regime === '2V2 / ROTATING' ? 10 : 8;
+
+            let resultSize = 'NEUTRAL';
+            if (edge >= threshold) {
+                resultSize = bigPct > smallPct ? 'BIG' : 'SMALL';
+            }
+
+            nums.forEach(x => {
+                x.score += x.hits * .09;
+                if (x.recent < 999)
+                    x.score += Math.max(0, .30 - x.recent * .010);
+            });
+
+            let ranked = nums.slice();
+            if (resultSize === 'BIG') ranked = ranked.filter(x => x.n >= 5);
+            if (resultSize === 'SMALL') ranked = ranked.filter(x => x.n <= 4);
+
+            ranked.sort((a, b) => b.score - a.score);
+
+            let top = ranked.slice(0, 2).map(x => x.n);
+            if (top.length < 2) {
+                top = nums.slice()
+                    .sort((a, b) => b.score - a.score)
+                    .slice(0, 2)
+                    .map(x => x.n);
+            }
+
             periodValueSpan.textContent = nextPeriod;
 
-            // Build result display
-            if (prediction.result === 'BIG') {
+            if (resultSize === 'BIG') {
                 resIcon.textContent = '🔥';
                 resSize.textContent = 'BIG';
-            } else if (prediction.result === 'SMALL') {
+            } else if (resultSize === 'SMALL') {
                 resIcon.textContent = '❄️';
                 resSize.textContent = 'SMALL';
             } else {
@@ -1262,13 +1123,7 @@
                 resSize.textContent = 'NEUTRAL';
             }
 
-            const nums = prediction.numbers || [0, 5];
-            resNum.textContent = ` ${nums.join(' · ')}`;
-
-            // Confidence
-            const conf = Math.min(100, Math.max(0, prediction.confidence || 40));
-            confFill.style.width = conf + '%';
-            confLabel.textContent = conf + '%';
+            resNum.textContent = top.length ? ` ${top.join(' · ')}` : ' —';
 
             analyzingState.style.display = 'none';
             finalResultState.style.display = 'block';
@@ -1276,13 +1131,18 @@
             void finalResultState.offsetWidth;
             finalResultState.classList.add('pop-anim');
 
-            console.info('[M S INJECTOR ENGINE]', {
+            console.info('[DARK SENSOR ENGINE]', {
                 nextPeriod,
                 key,
-                prediction: prediction.result,
-                numbers: nums,
-                confidence: conf,
-                matchesUsed: rows.length > 10 ? 'pattern' : 'fallback'
+                regime,
+                currentRun,
+                longestRun,
+                alternationRatio: alternationRatio.toFixed(2),
+                exactMatches: exact.length,
+                bigPct: bigPct.toFixed(1),
+                smallPct: smallPct.toFixed(1),
+                edge: edge.toFixed(1),
+                candidates: top
             });
         }
 
@@ -1300,7 +1160,7 @@
 
                 setTimeout(() => renderHistorySummary(historyRows), 700);
 
-                periodValueSpan.style.boxShadow = '0 0 10px #00ff00';
+                periodValueSpan.style.boxShadow = '0 0 10px #00c8ff';
                 setTimeout(() => { periodValueSpan.style.boxShadow = 'none'; }, 1000);
             }
         }
@@ -1309,13 +1169,11 @@
             await updateHistory();
         }
 
-        // Start polling
         startBtn.addEventListener('click', () => {
             updateHistory();
             if (!historyTimer) historyTimer = setInterval(updateHistory, 3000);
         }, { once: true });
 
-        // also prime on load
         updateHistory();
     </script>
 </body>
